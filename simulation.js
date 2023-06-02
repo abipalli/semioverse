@@ -47,6 +47,7 @@ class EventDictionary {
 class Simulation {
   constructor() {
     this._messages = [];
+    this._simulations = [];
     this._story = [];
     this._expressions = new Map();
     this._running = [];
@@ -58,6 +59,10 @@ class Simulation {
 
   get messages() {
     return [...this._messages];
+  }
+
+  get simulations() {
+    return [...this._simulations];
   }
 
   get story() {
@@ -88,6 +93,16 @@ class Simulation {
     return this._eventDictionary;
   }
 
+  newSimulation() {
+    this._simulations.push(new Simulation());
+  }
+
+  addSimulation(simulation) {
+    if (simulation instanceof Simulation) {
+      this._simulations.push(simulation);
+    }
+  }
+
   send(message) {
     // Validate and process the message as needed
     this._messages.push(message);
@@ -115,7 +130,7 @@ class Simulation {
 
   async express(...threads) {
     // a thread is an iterable of values, or object-references.
-    // [sources/targets/expressions]
+    //[ [sources/targets/expressions], [target], [scenes], [roles], [moves] ]
     let expr = new Map();
     this._expressions.add(expr);
     expr.set("sources", new Map());
@@ -152,6 +167,7 @@ class Simulation {
       // expressions: new Map(), -> perhaps creating expressions map for each narrative object.
       expressions: this.expressions,
       messages: this.messages,
+      simulations: this.simulations,
       story: this.story,
       running: this.running,
       pending: this.pending,

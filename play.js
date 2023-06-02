@@ -24,9 +24,9 @@ function generatePlayerId() {
 class Play extends Simulation {
   constructor(spaces) {
     super();
+    super.newSimulation();
     this._conns = [];
     this._namemap = new Map();
-    this._simulations = [new Simulation()];
     this._expressions = [];
 
     // Initialize hyperswarm instance
@@ -41,16 +41,6 @@ class Play extends Simulation {
     });
 
     this.swarm.on("connection", this.handleConnection.bind(this));
-  }
-
-  newSimulation() {
-    this._simulations.push(new Simulation());
-  }
-
-  addSimulation(simulation) {
-    if (simulation instanceof Simulation) {
-      this._simulations.push(simulation);
-    }
   }
 
   handleConnection(conn) {
@@ -84,13 +74,22 @@ class Play extends Simulation {
 
   handleData(data) {
     // Parse the received data
-    console.log("data:", data);
     const expr = JSOG.parse(data.toString());
     this._expressions.push(expr);
 
     // Send the data to all simulations
     console.log("expr:", expr);
-    this.sendToSimulations(data);
+    this.sendToSimulations(expr);
+  }
+
+  broadcast(data) {
+    // Stringify the data preserving any circular references
+    const dataString = JSOG.stringify(data);
+    console.log("Broadcast: ", dataString);
+    // Send the data string to every connection
+    this._conns.forEach((conn) => {
+      conn.write(dataString);
+    });
   }
 
   sendToSimulations(data) {
@@ -103,6 +102,11 @@ class Play extends Simulation {
 let play = new Play(
   "17fdd7cc6108d77c1b58e7926b910bd1b3013dd9db8ac41320dcb6f8d65b259d"
 );
+
+setTimeout(() => {
+  play.broadcast("hi from player 1");
+  console.log(play.messages);
+}, 10000);
 
 console.log(play);
 
