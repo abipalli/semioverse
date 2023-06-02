@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Play!</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 20px;
+        padding: 20px;
+        background-color: #fff8df;
+      }
+      h1 {
+        text-align: center;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        gap: 20px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 160px;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      input,
+      textarea,
+      button {
+        font-family: inherit;
+      }
+      
+      #narratives {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        height: auto;
+        gap: 10px;
+      }
+      .narrative-card,
+      .form-card {
+        width: 160px;
+        height: 240px;
+        border: 1px solid rgb(81, 82, 81);
+        padding: 10px;
+        background-color: #f5f5f5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      section {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+      }
+      #canvas {
+        border: 1px solid rgb(81, 81, 81);
+        display: flex;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        position: relative;
+        max-height: 70%;
+        overflow-y: scroll;
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        cursor: pointer;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .tutorial-text {
+        font-size: 16px;
+      }
+      #discard-area {
+  border: 2px dashed #888;
+  padding: 20px;
+  background-color: #eee;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  width: 160px;
+}
+#playerDeck {
+        border: 2px dashed #ccc;
+        padding: 10px;
+        margin: 5px;
+        display: inline-block;
+        background-color: #ebdfff;
+        min-width: 200px;
+        min-height: 200px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <div class="form-card">
+          <form id="narrative-form">
+            <input type="text" id="narrative-name" placeholder="name" required />
+            <input type="number" id="narrative-priority" placeholder="priority"  />
+            <textarea id="narrative-generator" placeholder="[λ*] body" required></textarea>
+            <button type="submit">Add Narrative</button>
+
+          </form>
+        </div>
+        <div id="narratives"></div>
+      </section>
+      <div id="discard-area">Drop to remove</div>
+    </main>
+    <section>
+      <div id="playerDeck"></div>
+      <canvas id="canvas" width=auto height=auto></canvas>
+      <button id="play!" disabled>Play!</button>
+    </section>
+    <section>
+      <h3>Running:</h3>
+      <pre id="running-log"></pre>
+      <h3>Pending:</h3>
+      <pre id="pending-log"></pre>
+      <h3>Last Event:</h3>
+      <pre id="last-event-log"></pre>
+      <table id="event-dictionary-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Referencing Narratives</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </section>
+    </section>
+    
+    <script type="module">
+      import Simulation from "./simulation.js";
+      //import { v4 as uuid } from 'uuid';
+      const narrativeForm = document.getElementById("narrative-form");
+      const narrativeNameInput = document.getElementById("narrative-name");
+      const narrativePriorityInput = document.getElementById(
+        "narrative-priority"
+      );
+      const narrativeGeneratorInput = document.getElementById(
+        "narrative-generator"
+      );
+      const startSimulationButton = document.getElementById("play!");
+      const narrativesList = document.getElementById("narratives");
+      const canvas = document.getElementById("canvas");
+      const discardArea = document.getElementById("discard-area");
+
+      const simulation = new Simulation();
+      const narratives = {};
+      const priorities = {};
+
+      let draggedCard;
+
+      function createCard(name, priority, generatorFunctionBody) {
+        const card = document.createElement("div");
+        card.classList.add("narrative-card");
+        card.draggable = true;
+        card.ondragstart = (event) => {
+          draggedCard = event.target;
+        };
+
+        card.innerHTML = `
+        <div>
+      <h3><strong>${name}</strong> [<span class="priority">${priority}</span>]</h3>
+      <p><strong>${generatorFunctionBody}</strong></p>
+      </div>
+    `;
+
+        return card;
+      }
+
+      function updatePriorities() {
+        const cards = Array.from(narrativesList.children);
+        cards.forEach((card, index) => {
+          const priorityElement = card.querySelector(".priority");
+          priorityElement.textContent = index + 1;
+          const narrativeName = card
+            .querySelector("strong")
+            .textContent.slice(6);
+          priorities[narrativeName] = index + 1;
+        });
+      }
+
+      narrativeForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        try {
+          const AsyncGeneratorFunction = async function* () {}.constructor;
+          const name = narrativeNameInput.value;
+          const priority = narrativePriorityInput.value
+            ? parseInt(narrativePriorityInput.value)
+            : Object.keys(priorities).length + 1;
+          const asyncgeneratorFunction = new AsyncGeneratorFunction(
+            narrativeGeneratorInput.value
+          );
+
+          narratives[name] = asyncgeneratorFunction;
+          priorities[name] = priority;
+
+          const card = createCard(
+            name,
+            priority,
+            narrativeGeneratorInput.value
+          );
+          narrativesList.appendChild(card);
+
+          updatePriorities();
+          narrativeNameInput.value = "";
+          narrativePriorityInput.value = "";
+          narrativeGeneratorInput.value = "";
+          if (Object.keys(narratives).length > 0) {
+            startSimulationButton.disabled = false;
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Error: Invalid generator function.");
+        }
+      });
+
+      narrativesList.ondragover = (event) => {
+        event.preventDefault();
+      };
+
+      narrativesList.ondrop = (event) => {
+        event.preventDefault();
+
+        const droppedOnCard = event.target.closest(".narrative-card");
+        if (droppedOnCard) {
+          const targetIndex = Array.from(narrativesList.children).indexOf(
+            droppedOnCard
+          );
+          const draggedIndex = Array.from(narrativesList.children).indexOf(
+            draggedCard
+          );
+
+          if (targetIndex < draggedIndex) {
+            narrativesList.insertBefore(draggedCard, droppedOnCard);
+          } else {
+            narrativesList.insertBefore(draggedCard, droppedOnCard.nextSibling);
+          }
+
+          updatePriorities();
+        }
+      };
+
+discardArea.ondragover = (event) => {
+  event.preventDefault();
+};
+
+discardArea.ondrop = (event) => {
+  event.preventDefault();
+
+  const narrativeName = draggedCard
+    .querySelector("strong")
+    .textContent.slice(6);
+
+  // Remove the card from the narratives list
+  narrativesList.removeChild(draggedCard);
+
+  // Remove the narrative from the `narratives` and `priorities` objects
+  delete narratives[narrativeName];
+  delete priorities[narrativeName];
+
+  updatePriorities();
+
+  if (Object.keys(narratives).length === 0) {
+    startSimulationButton.disabled = true;
+  }
+};
+
+
+  // ... (all the existing code) ...
+
+  discardArea.ondragover = (event) => {
+    event.preventDefault();
+  };
+
+  discardArea.ondrop = (event) => {
+    event.preventDefault();
+
+    const narrativeName = draggedCard
+      .querySelector("strong")
+      .textContent.slice(6);
+
+    // Remove the card from the narratives list
+    narrativesList.removeChild(draggedCard);
+
+    // Remove the narrative from the `narratives` and `priorities` objects
+    delete narratives[narrativeName];
+    delete priorities[narrativeName];
+
+    updatePriorities();
+
+    if (Object.keys(narratives).length === 0) {
+      startSimulationButton.disabled = true;
+    }
+  };
+
+
+  function dragover_handler(event) {
+    event.preventDefault();
+  }
+
+  function drop_handler(event) {
+    event.preventDefault();
+
+    const droppedOnPlayerDeck = event.target.closest("#playerDeck");
+    if (droppedOnPlayerDeck) {
+      droppedOnPlayerDeck.appendChild(draggedCard);
+    }
+  }
+  function initializeDeckBuilder() {
+    const playerDeck = document.getElementById("playerDeck");
+    playerDeck.id = "playerDeck";
+    playerDeck.addEventListener("dragover", dragover_handler);
+    playerDeck.addEventListener("drop", drop_handler);
+  }
+  
+  startSimulationButton.addEventListener("click", () => {
+  simulation.addAll(narratives, priorities);
+  simulation.run(renderSimulation);
+  //updateEventDictionaryTable();
+});
+
+function updateEventDictionaryTable() {
+  const tableBody = document.querySelector("#event-dictionary-table tbody");
+  tableBody.innerHTML = "";
+
+  for (const [key, value] of Object.entries(simulation.eventDictionary.mapping)) {
+    const row = document.createElement("tr");
+
+    const eventCell = document.createElement("td");
+    eventCell.textContent = `"${key}"`;
+    row.appendChild(eventCell);
+
+    const mappingCell = document.createElement("td");
+    mappingCell.textContent = `[${value.map(item => `"${item}"`).join(", ")}]`;
+    row.appendChild(mappingCell);
+
+    tableBody.appendChild(row);
+  }
+}
+/*
+function renderSimulation(simulation) {
+  // Clear the previous state
+  const canvas = document.getElementById("canvas");
+  canvas.innerHTML = "";
+
+  // Render the current state
+  for (const bid of simulation.running.concat(simulation.pending)) {
+    const narrativeCard = document.createElement("ncard");
+    narrativeCard.className = "narrative-card";
+
+    const narrativeName = document.createElement("nname");
+    narrativeName.textContent = bid.name;
+    narrativeCard.appendChild(narrativeName);
+
+    const narrativeStep = document.createElement("sindex");
+    narrativeStep.textContent = `Current Step: ${bid.stepIndex}`;
+    narrativeCard.appendChild(narrativeStep);
+
+    canvas.appendChild(narrativeCard);
+  }
+}*/
+
+      function renderSimulation(sim) {
+        const canvas = document.getElementById("canvas");
+        for (const bid of sim.running.concat(sim.pending)) {
+          console.log(bid)
+        }
+        // Draw some elements based on the simulation state
+        // This is just a placeholder and should be replaced with actual rendering logic
+
+        // Update logs
+        document.getElementById("running-log").textContent = JSON.stringify(
+          sim.running,
+          null,
+          2
+        );
+        document.getElementById("pending-log").textContent = JSON.stringify(
+          sim.pending,
+          null,
+          2
+        );
+        document.getElementById("last-event-log").textContent = JSON.stringify(
+          sim.lastEvent,
+          null,
+          2
+        );
+      }
+      initializeDeckBuilder();
+    </script>
+  </body>
+</html>
