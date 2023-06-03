@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>D3 Card Interface</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      .send-to-space {
+        cursor: pointer;
+        fill: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      // set up svg canvas
+      const svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", 800)
+        .attr("height", 600);
+
+      // Create layers
+      const layers = new Map([
+        ["space-layer", svg.append("g").attr("id", "space-layer")],
+        ["composition-layer", svg.append("g").attr("id", "composition-layer")],
+      ]);
+
+      class Card extends Map {
+        constructor(layers) {
+          super();
+          this.set("layers", layers);
+          this.set("expressions", new Map());
+          this.set("children", []);
+          this.set("interactions", new Map());
+          this.set("eventHandlers", new Map());
+        }
+
+        // Add interaction
+        addInteraction(layerName, interaction) {
+          this.get("interactions").set(layerName, interaction);
+        }
+
+        // Apply interaction
+        applyInteraction(layerName) {
+          const interaction = this.get("interactions").get(layerName);
+          if (interaction) {
+            interaction(this);
+          }
+        }
+
+        // Add event handler
+        addEventHandler(event, handler) {
+          this.get("eventHandlers").set(event, handler);
+        }
+
+        // Apply event handlers
+        applyEventHandlers() {
+          const eventMap = this.get("eventHandlers");
+          if (eventMap) {
+            for (let [event, handler] of eventMap.entries()) {
+              for (let layerElement of this.get("layers").values()) {
+                layerElement.on(event, () => handler(this));
+              }
+            }
+          }
+        }
+      }
+
+      export class ElementMap {
+        constructor() {
+          this.mapping = new Map();
+        }
+
+        // Associate a new SVG element with a specific object
+        newElement(svgElement, associatedObject) {
+          const id = "#" + uuid.v4();
+          svgElement.attr("id", id);
+          this.mapping.set(id, associatedObject);
+          return id;
+        }
+
+        // Retrieve the object associated with a given SVG element
+        getElementObject(svgElementId) {
+          const obj = this.mapping.get(svgElementId);
+          if (!obj) {
+            throw new Error(
+              `No object associated with SVG element ${svgElementId}`
+            );
+          }
+          return obj;
+        }
+
+        // Update the object associated with a given SVG element
+        updateElementObject(svgElementId, newObject) {
+          if (!this.mapping.has(svgElementId)) {
+            throw new Error(
+              `No object associated with SVG element ${svgElementId} to update`
+            );
+          }
+          this.mapping.set(svgElementId, newObject);
+        }
+      }
+
+      const elementmap = new ElementMap();
+
+      function card(layerNames, x, y, width, height, color, parent = null) {
+        const cardLayers = new Map();
+        const card = new Card(cardLayers);
+
+        for (let layerName of layerNames) {
+          const layer = parent
+            ? parent.get("layers").get(layerName)
+            : layers.get(layerName);
+          const group = layer
+            .append("g")
+            .attr("transform", `translate(${x}, ${y})`);
+          const rect = group
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", color);
+          cardLayers.set(layerName, group);
+          elementmap.newElement(group, card);
+
+          if (layerName === "composition-layer") {
+            const sendToSpace = group
+              .append("text")
+              .attr("class", "send-to-space")
+              .attr("x", width - 20)
+              .attr("y", height - 10)
+              .text("⇧")
+              .on("click", function () {
+                // Remove the card from the current layer in the DOM.
+                d3.select(this.parentNode).remove();
+
+                // Change the card's layer in the data structure.
+                const spaceLayer = layers.get("space-layer");
+                card.get("layers").set("space-layer", spaceLayer);
+
+                // Draw the card in the new layer in the DOM.
+                const spaceGroup = spaceLayer
+                  .append("g")
+                  .attr(
+                    "transform",
+                    d3.select(this.parentNode).attr("transform")
+                  );
+                const spaceRect = spaceGroup
+                  .append("rect")
+                  .attr("width", width)
+                  .attr("height", height)
+                  .style("fill", color);
+                card.get("layers").set("space-layer", spaceGroup);
+                elementmap.newElement(spaceGroup, card);
+                card.applyInteraction("space-layer");
+                card.applyEventHandlers();
+
+                // Stop propagation so we don't trigger parent card's click event.
+                d3.event.stopPropagation();
+              });
+          }
+        }
+
+        if (parent) {
+          parent.get("children").push(card);
+        }
+
+        return card;
+      }
+
+      function dragCard(card) {
+        card.get("layers").forEach((group, layerName) => {
+          const drag = d3.drag().on("drag", function () {
+            const dx = d3.event.dx;
+            const dy = d3.event.dy;
+            const transform = d3.select(this).attr("transform");
+            let x = 0;
+            let y = 0;
+
+            if (transform) {
+              const translate = transform
+                .substring(transform.indexOf("(") + 1, transform.indexOf(")"))
+                .split(",");
+              x = +translate[0]; // convert string to number
+              y = +translate[1]; // convert string to number
+            }
+
+            x += dx;
+            y += dy;
+
+            d3.select(this).attr("transform", `translate(${x}, ${y})`);
+          });
+          group.call(drag);
+        });
+      }
+
+      // Maybe you want to define a different interaction for the space layer
+      function someOtherInteraction(card) {
+        // Define interaction here...
+      }
+
+      // Define an example event handler function
+      function handleClick(card) {
+        console.log(`Card ${card.get("element").attr("id")} was clicked!`);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      const parentCard = card(["composition-layer"], 100, 100, 100, 100, "red");
+      const childCard = card(
+        ["composition-layer"],
+        100,
+        100,
+        50,
+        50,
+        "blue",
+        parentCard
+      );
+      const ccCard = card(
+        ["composition-layer"],
+        50,
+        50,
+        30,
+        30,
+        "green",
+        childCard
+      );
+      const spaceCard = card(["space-layer"], 350, 350, 100, 100, "green");
+      parentCard.addInteraction("composition-layer", dragCard);
+      parentCard.addEventHandler("click", handleClick);
+      parentCard.applyInteraction("composition-layer");
+      parentCard.applyEventHandlers();
+
+      spaceCard.addInteraction("space-layer", dragCard);
+      spaceCard.addEventHandler("click", handleClick);
+      spaceCard.applyInteraction("space-layer");
+      spaceCard.applyEventHandlers();
+    </script>
+  </body>
+</html>

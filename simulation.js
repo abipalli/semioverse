@@ -185,9 +185,9 @@ class Simulation {
     this._running.push(bid);
     // Add event references to the dictionary
     /*const eventTypes = this.extractEventTypesFromNarrative([...nar]);
-          eventTypes.forEach((eventType) =>
-            this._eventDictionary.addEventReference(eventType, name)
-          );*/
+            eventTypes.forEach((eventType) =>
+              this._eventDictionary.addEventReference(eventType, name)
+            );*/
   }
 
   addAll(narratives, priorities) {
@@ -397,27 +397,27 @@ class Simulation {
   // Uncomment this method if needed
   // extractEventTypesFromNarrative(narrative) {
   /*const eventTypes = new Set();
-    
-        // Iterate through the narrative parts
-        for (const part of narrative) {
-          // Extract event-types from the 'request', 'wait', and 'block' properties
-          ["request", "wait", "block"].forEach((property) => {
-            if (part[property]) {
-              const events = Array.isArray(part[property])
-                ? part[property]
-                : [part[property]];
-              events.forEach((event) => {
-                if (typeof event === "string") {
-                  eventTypes.add(event);
-                } else if (event && event.type) {
-                  eventTypes.add(event.type);
-                }
-              });
-            }
-          });
-        }
       
-        return Array.from(eventTypes); } */
+          // Iterate through the narrative parts
+          for (const part of narrative) {
+            // Extract event-types from the 'request', 'wait', and 'block' properties
+            ["request", "wait", "block"].forEach((property) => {
+              if (part[property]) {
+                const events = Array.isArray(part[property])
+                  ? part[property]
+                  : [part[property]];
+                events.forEach((event) => {
+                  if (typeof event === "string") {
+                    eventTypes.add(event);
+                  } else if (event && event.type) {
+                    eventTypes.add(event.type);
+                  }
+                });
+              }
+            });
+          }
+        
+          return Array.from(eventTypes); } */
 }
 
 export default Simulation;

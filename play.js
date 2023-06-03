@@ -100,13 +100,8 @@ class Play extends Simulation {
 }
 
 let play = new Play(
-  "17fdd7cc6108d77c1b58e7926b910bd1b3013dd9db8ac41320dcb6f8d65b259d"
+  "3c4387f8e27a94cf1891d7510d197168fd239190aeb67932e828830526d61fe5"
 );
-
-setTimeout(() => {
-  play.broadcast("hi from player 1");
-  console.log(play.messages);
-}, 10000);
 
 console.log(play);
 

@@ -1,9 +1,8 @@
-
 # Play!
 
 Play! is an interfacing interface for distributed semiosis, it is an interface for navigating and transforming the semioverse. Peers in this network can connect and communicate, each running independent but interoperable simulations. The system as can be viewed as a complex symbol system where symbols are not just being used but created and redefined continuously.
 
-Each simulation, running on a peer, represents a semiotic domain, a self-contained yet interoperable universe of meaning. Here, `Simulation` and `Play` serve as base classes for creating, interacting with, and sharing these semiotic domains.
+Each simulation represents a semiotic domain, a self-contained yet interoperable universe of meaning. Here, `Simulation` and `Play` serve as base classes for creating, interacting with, and sharing these semiotic domains.
 
 The `Play` class, specifically, handles the networking aspect, joining and leaving the Hyperswarm network, handling connections, and passing data between connected peers. This can be seen as a distributed meaning-making system, where each peer can generate, share, and interpret symbols (or "expressions") within their own context, while also receiving and interpreting expressions from others.
 
