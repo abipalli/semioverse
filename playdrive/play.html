@@ -304,13 +304,13 @@
           });
         }
 
-        addStyle(layerName, style) {
-          this.get("styles").set(layerName, style);
+        addStyle(layerName, styleFunc) {
+          this.get("styles").set(layerName, styleFunc);
           this.applyStyles();
         }
 
-        addAnimation(layerName, animation) {
-          this.get("animations").set(layerName, animation);
+        addAnimation(layerName, animationFunc) {
+          this.get("animations").set(layerName, animationFunc);
           this.applyAnimations();
         }
 
@@ -329,18 +329,18 @@
 
         applyStyles() {
           this.get("layers").forEach((group, layerName) => {
-            const style = this.get("styles").get(layerName);
-            if (style) {
-              style.applyStyle(this, group, layerName);
+            const styleFunc = this.get("styles").get(layerName);
+            if (styleFunc) {
+              styleFunc(this, group, layerName);
             }
           });
         }
 
         applyAnimations() {
           this.get("layers").forEach((group, layerName) => {
-            const animation = this.get("animations").get(layerName);
-            if (animation) {
-              animation.applyAnimation(this, group, layerName);
+            const animationFunc = this.get("animations").get(layerName);
+            if (animationFunc) {
+              animationFunc(this, group, layerName);
             }
           });
         }
@@ -369,26 +369,6 @@
               }
             }
           }
-        }
-      }
-
-      class Style {
-        constructor(styleFunc = () => {}) {
-          this.styleFunc = styleFunc;
-        }
-
-        applyStyle(card, group, layerName) {
-          this.styleFunc(card, group, layerName);
-        }
-      }
-
-      class Animation {
-        constructor(animationFunc = () => {}) {
-          this.animationFunc = animationFunc;
-        }
-
-        applyAnimation(card, group, layerName) {
-          this.animationFunc(card, group, layerName);
         }
       }
 
@@ -539,8 +519,6 @@
           });
       }
 
-      const pulsate = new Animation(pulsateAnimation);
-
       function hoverStyle(card, group, layerName) {
         group
           .select("rect")
@@ -551,8 +529,6 @@
             d3.select(this).style("fill", "blue");
           });
       }
-
-      const hover = new Style(hoverStyle);
 
       let card1 = card(
         ["composition-layer"],
@@ -587,12 +563,12 @@
         [["click", handleClick]]
       );
 
-      card1.addAnimation("space-layer", pulsate);
-      card1.addStyle("space-layer", hover);
-      card2.addAnimation("space-layer", pulsate);
-      card2.addStyle("space-layer", hover);
-      card3.addAnimation("space-layer", pulsate);
-      card3.addStyle("space-layer", hover);
+      card1.addAnimation("space-layer", pulsateAnimation);
+      card1.addStyle("space-layer", hoverStyle);
+      card2.addAnimation("space-layer", pulsateAnimation);
+      card2.addStyle("space-layer", hoverStyle);
+      card3.addAnimation("space-layer", pulsateAnimation);
+      card3.addStyle("space-layer", hoverStyle);
       card1.renderCardGraph(elementmap);
     </script>
   </body>
