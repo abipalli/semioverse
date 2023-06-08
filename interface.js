@@ -1,21 +1,21 @@
 import { v4 as uuid } from "uuid";
 
-class ElementMap {
+class ElementMap extends Map {
   constructor() {
-    this.mapping = new Map();
+    super();
   }
 
   // Associate a new SVG element with a specific object
   newElement(svgElement, associatedObject) {
     const id = "#" + uuid();
     svgElement.attr("id", id);
-    this.mapping.set(id, associatedObject);
+    this.set(id, associatedObject);
     return id;
   }
 
   // Retrieve the object associated with a given SVG element
   getElementObject(svgElementId) {
-    const obj = this.mapping.get(svgElementId);
+    const obj = this.get(svgElementId);
     if (!obj) {
       throw new Error(`No object associated with SVG element ${svgElementId}`);
     }
@@ -24,12 +24,12 @@ class ElementMap {
 
   // Update the object associated with a given SVG element
   updateElementObject(svgElementId, newObject) {
-    if (!this.mapping.has(svgElementId)) {
+    if (!this.has(svgElementId)) {
       throw new Error(
         `No object associated with SVG element ${svgElementId} to update`
       );
     }
-    this.mapping.set(svgElementId, newObject);
+    this.set(svgElementId, newObject);
   }
 }
 

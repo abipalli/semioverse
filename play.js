@@ -1,4 +1,4 @@
-import Simulation from "./simulation.js";
+import Game from "./game.js";
 import Hyperswarm from "hyperswarm";
 import goodbye from "graceful-goodbye";
 import crypto from "hypercore-crypto";
@@ -21,10 +21,10 @@ function generatePlayerId() {
   return playerId;
 }
 
-class Play extends Simulation {
+class Play extends Game {
   constructor(spaces) {
     super();
-    super.newSimulation();
+    super.newGame();
     this._conns = [];
     this._namemap = new Map();
     this._expressions = [];
@@ -77,9 +77,9 @@ class Play extends Simulation {
     const expr = JSOG.parse(data.toString());
     this._expressions.push(expr);
 
-    // Send the data to all simulations
+    // Send the data to all games
     console.log("expr:", expr);
-    this.sendToSimulations(expr);
+    this.sendToGames(expr);
   }
 
   broadcast(data) {
@@ -92,9 +92,9 @@ class Play extends Simulation {
     });
   }
 
-  sendToSimulations(data) {
-    for (let simulation of this.simulations) {
-      simulation.send(data);
+  sendToGames(data) {
+    for (let game of this.games) {
+      game.send(data);
     }
   }
 }
