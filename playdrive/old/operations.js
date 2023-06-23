@@ -1,4 +1,4 @@
-import Card from "../card.js";
+import Card from "../../main/card.js";
 
 /*
 The Card class, as defined here, is a structure that can be used to represent an operation-operand graph. In this context, operations can be considered as the keys in the Card and the operands as the corresponding values.

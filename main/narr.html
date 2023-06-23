@@ -188,8 +188,7 @@
     </section>
     
     <script type="module">
-      import Simulation from "./simulation.js";
-      //import { v4 as uuid } from 'uuid';
+      import Game from "./game.js";
       const narrativeForm = document.getElementById("narrative-form");
       const narrativeNameInput = document.getElementById("narrative-name");
       const narrativePriorityInput = document.getElementById(
@@ -198,12 +197,12 @@
       const narrativeGeneratorInput = document.getElementById(
         "narrative-generator"
       );
-      const startSimulationButton = document.getElementById("play!");
+      const startGameButton = document.getElementById("play!");
       const narrativesList = document.getElementById("narratives");
       const canvas = document.getElementById("canvas");
       const discardArea = document.getElementById("discard-area");
 
-      const simulation = new Simulation();
+      const game = new Game();
       const narratives = {};
       const priorities = {};
 
@@ -267,7 +266,7 @@
           narrativePriorityInput.value = "";
           narrativeGeneratorInput.value = "";
           if (Object.keys(narratives).length > 0) {
-            startSimulationButton.disabled = false;
+            startGameButton.disabled = false;
           }
         } catch (error) {
           console.error(error);
@@ -322,7 +321,7 @@ discardArea.ondrop = (event) => {
   updatePriorities();
 
   if (Object.keys(narratives).length === 0) {
-    startSimulationButton.disabled = true;
+    startGameButton.disabled = true;
   }
 };
 
@@ -350,7 +349,7 @@ discardArea.ondrop = (event) => {
     updatePriorities();
 
     if (Object.keys(narratives).length === 0) {
-      startSimulationButton.disabled = true;
+      startGameButton.disabled = true;
     }
   };
 
@@ -374,9 +373,9 @@ discardArea.ondrop = (event) => {
     playerDeck.addEventListener("drop", drop_handler);
   }
   
-  startSimulationButton.addEventListener("click", () => {
-  simulation.addAll(narratives, priorities);
-  simulation.run(renderSimulation);
+  startGameButton.addEventListener("click", () => {
+  game.addAll(narratives, priorities);
+  game.run(renderGame);
   //updateEventDictionaryTable();
 });
 
@@ -384,7 +383,7 @@ function updateEventDictionaryTable() {
   const tableBody = document.querySelector("#event-dictionary-table tbody");
   tableBody.innerHTML = "";
 
-  for (const [key, value] of Object.entries(simulation.eventDictionary.mapping)) {
+  for (const [key, value] of Object.entries(game.eventDictionary.mapping)) {
     const row = document.createElement("tr");
 
     const eventCell = document.createElement("td");
@@ -398,50 +397,28 @@ function updateEventDictionaryTable() {
     tableBody.appendChild(row);
   }
 }
-/*
-function renderSimulation(simulation) {
-  // Clear the previous state
-  const canvas = document.getElementById("canvas");
-  canvas.innerHTML = "";
 
-  // Render the current state
-  for (const bid of simulation.running.concat(simulation.pending)) {
-    const narrativeCard = document.createElement("ncard");
-    narrativeCard.className = "narrative-card";
-
-    const narrativeName = document.createElement("nname");
-    narrativeName.textContent = bid.name;
-    narrativeCard.appendChild(narrativeName);
-
-    const narrativeStep = document.createElement("sindex");
-    narrativeStep.textContent = `Current Step: ${bid.stepIndex}`;
-    narrativeCard.appendChild(narrativeStep);
-
-    canvas.appendChild(narrativeCard);
-  }
-}*/
-
-      function renderSimulation(sim) {
+      function renderGame(game) {
         const canvas = document.getElementById("canvas");
-        for (const bid of sim.running.concat(sim.pending)) {
+        for (const bid of game.running.concat(game.pending)) {
           console.log(bid)
         }
-        // Draw some elements based on the simulation state
+        // Draw some elements based on the gameulation state
         // This is just a placeholder and should be replaced with actual rendering logic
 
         // Update logs
         document.getElementById("running-log").textContent = JSON.stringify(
-          sim.running,
+          game.running,
           null,
           2
         );
         document.getElementById("pending-log").textContent = JSON.stringify(
-          sim.pending,
+          game.pending,
           null,
           2
         );
         document.getElementById("last-event-log").textContent = JSON.stringify(
-          sim.lastEvent,
+          game.lastEvent,
           null,
           2
         );

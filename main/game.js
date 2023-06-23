@@ -1,5 +1,3 @@
-import "./card.js";
-
 const isEmpty = function (arr) {
   return arr.length == 0;
 };
@@ -12,51 +10,178 @@ function compareBids(a, b) {
   return a.priority - b.priority;
 }
 
-class CardDictionary extends Card {
-  constructor() {
-    super();
+class EventDictionary extends Map {
+  constructor(...args) {
+    super(args);
   }
 
-  addCardReference(cardType, narrativeRef) {
-    if (!this.has(cardType)) {
-      this.set(cardType, []);
+  addEventReference(eventType, narrativeRef) {
+    if (!this.has(eventType)) {
+      this.set(eventType, []);
     }
-    this.get(cardType).push(narrativeRef);
+    this.get(eventType).push(narrativeRef);
   }
 
-  getNarrativesForCard(cardType) {
-    return this.get(cardType) || [];
+  getNarrativesForEvent(eventType) {
+    return this.get(eventType) || [];
   }
 
-  removeCardReference(cardType, narrativeRef) {
-    if (this.has(cardType)) {
-      const refs = this.get(cardType);
+  removeEventReference(eventType, narrativeRef) {
+    if (this.has(eventType)) {
+      const refs = this.get(eventType);
       const index = refs.indexOf(narrativeRef);
       if (index !== -1) {
         refs.splice(index, 1);
         if (refs.length === 0) {
-          this.delete(cardType);
+          this.delete(eventType);
         }
       }
     }
   }
 
-  clearCardReferences() {
+  clearEventReferences() {
     this.clear();
   }
 }
 
-class Game {
-  constructor() {
+export class Card extends Map {
+  constructor(name, ...args) {
+    super(...args);
+    this.name = name;
+    this.positions = new Set();
+    this.transforms = new Set();
+    this.expressions = new Set();
+  }
+
+  async thread(...paths) {
+    let map = this;
+    let initmap = map;
+    for await (const path of paths) {
+      if (map instanceof Map || map instanceof Card) {
+        if (Array.isArray(path)) {
+          const [actualPath, rule] = path;
+          if (typeof rule === "function" && !rule()) {
+            break;
+          }
+          if (!map.has(actualPath)) {
+            map.set(actualPath, new Card());
+          }
+          map = map.get(actualPath);
+        } else {
+          if (!map.has(path)) {
+            map.set(path, new Card());
+          }
+          map = map.get(path);
+        }
+      } else {
+        console.log("map is not instanceof Map or Card");
+        break;
+      }
+    }
+    return initmap;
+  }
+
+  async weave(...threads) {
+    // It takes in an array of arrays, where each array represents a thread of paths to be weaved.
+    for (const thread of threads) {
+      await this.thread(...thread);
+    }
+  }
+  async *navigate(pathsOrGenerator) {
+    // Handles both an iterable or an asynchronous generator
+    let currentCard = this;
+    let previousCard = null;
+
+    const pathsIterator =
+      Symbol.iterator in pathsOrGenerator
+        ? pathsOrGenerator[Symbol.iterator]()
+        : pathsOrGenerator;
+
+    for await (let { value: path, done } of pathsIterator) {
+      if (!done) {
+        if (path === "metaphor-dive") {
+          const peek = pathsIterator.next();
+          if (!peek.done && currentCard.has(peek.value)) {
+            const nextPath = peek.value;
+            const nextCard = currentCard.get(nextPath);
+            if (nextCard instanceof Map || nextCard instanceof Card) {
+              previousCard = currentCard;
+              currentCard = nextCard;
+              path = nextPath;
+            }
+          }
+        } else if (currentCard.has(path)) {
+          previousCard = currentCard;
+          currentCard = currentCard.get(path);
+        } else {
+          return;
+        }
+
+        if (previousCard) {
+          let positions = currentCard.positions;
+          if (!positions) {
+            positions = new Set();
+            currentCard.positions = positions;
+          }
+          positions.add(previousCard);
+        }
+
+        yield currentCard;
+      }
+    }
+  }
+
+  async *replace(substitute, destinationkey, ...routes) {
+    for await (const route of routes) {
+      let iterator = this.navigate(route); // we should ensure that route is an iterable or an async generator
+      let result = await iterator.next();
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done && result.value.has(destinationkey)) {
+          result.value.set(destinationkey, new Card());
+          result.value.get(destinationkey).set("value", substitute);
+        } else if (nextResult.done) {
+          continue;
+        }
+        result = nextResult;
+      }
+    }
+  }
+
+  // Apply all associated transforms to this card and return the transformed cards
+  transform() {
+    //transform(): This method applies all the Transformations that have been linked to the Card. For each Transformation in the Card's "transforms" Set, it invokes the applyTo method of the Transformation, passing in the Card itself. This effectively transforms the Card according to each Transformation. Each transformation returns a new Card, and all the resulting transformed Cards are collected into an array.
+    const transformedCards = [];
+    for (const transform of this.transforms) {
+      transformedCards.push(transform.get("applyTo")(this));
+    }
+    return transformedCards;
+  }
+
+  async *pathsGenerator(interpreter) {
+    // This method is a generator that interprets the expressions on the current card based on the provided interpreter function.
+    while (true) {
+      const interpretation = await interpreter(this);
+      if (interpretation === null || interpretation === undefined) {
+        break;
+      }
+      yield interpretation;
+    }
+  }
+}
+
+class Game extends Card {
+  constructor(...args) {
+    super(args);
     this._messages = [];
     this._games = [];
     this._story = [];
-    this._expressions = new Card();
+    this._expressions = new Set();
     this._running = [];
     this._pending = [];
-    this._lastCard = undefined;
+    this._lastEvent = undefined;
     this._disabled = []; // List of currently disabled elements
-    this._cardDictionary = new CardDictionary();
+    this._eventDictionary = new EventDictionary();
   }
 
   get messages() {
@@ -72,7 +197,7 @@ class Game {
   }
 
   get expressions() {
-    return new Card(this._expressions);
+    return new Set(this._expressions);
   }
 
   get running() {
@@ -83,16 +208,16 @@ class Game {
     return [...this._pending];
   }
 
-  get lastCard() {
-    return this._lastCard;
+  get lastEvent() {
+    return this._lastEvent;
   }
 
   get disabled() {
     return [...this._disabled];
   }
 
-  get cardDictionary() {
-    return this._cardDictionary;
+  get eventDictionary() {
+    return this._eventDictionary;
   }
 
   newGame() {
@@ -110,24 +235,8 @@ class Game {
     this._messages.push(message);
   }
 
-  getNarrativesForCard(cardType) {
-    return this._cardDictionary.getNarrativesForCard(cardType);
-  }
-
-  async thread(...paths) {
-    map = await this;
-    let initmap = await map;
-    for await (const path of paths) {
-      if (map instanceof Map || map instanceof Card) {
-        if (!map.has(path)) {
-          map.set(path, new Card());
-        }
-        map = map.get(path);
-      } else {
-        return console.log("map variable is not instanceof Map");
-      }
-    }
-    return initmap;
+  getNarrativesForEvent(eventType) {
+    return this._eventDictionary.getNarrativesForEvent(eventType);
   }
 
   async express(...threads) {
@@ -136,23 +245,22 @@ class Game {
     let expr = new Card();
     expr.set("sources", new Card());
     expr.set("targets", new Card());
-    expr.set("expressions", new Card());
 
     for (const thrd of threads) {
       await thread(expr, ...thrd); // assuming each thread is an array, spread it as arguments
     }
 
     for (const key of expr.keys()) {
-      if (expr.get(key) instanceof Card || Map) {
+      let value = expr.get(key);
+      if (value instanceof Map || value instanceof Card) {
         // we make the assumption that the second nested key after sources, targets, and expressions
         // is always scenes
         for (const scene of expr.get(key)) {
           let sceneMap = scene[1].get("scenes");
-          if (!sceneMap.has("expressions")) {
-            sceneMap.set("expressions", new Card());
-            sceneMap.get("expressions").set(expr, new Card());
+          if (!sceneMap.expressions) {
+            sceneMap.expressions.add(expr);
           } else {
-            sceneMap.get("expressions").set(expr, new Card());
+            sceneMap.expressions.add(expr);
           }
         }
       }
@@ -160,35 +268,36 @@ class Game {
     console.log(expr);
     return expr;
   }
+
   async addNarrative(name, prio, fun) {
     var bound = fun.bind({
-      lastCard: () => this.lastCard,
+      lastEvent: () => this.lastEvent,
       express: async (...threads) => this.express(...threads),
       // this allows narratives to access the story, the expressions, and express function, thread, weave
-      // expressions: new Card(), -> perhaps creating expressions map for each narrative object.
-      expressions: this.expressions,
+      expressions: new Set(),
+      gameExpressions: this.expressions,
       messages: this.messages,
       games: this.games,
       story: this.story,
       running: this.running,
       pending: this.pending,
       disabled: this.disabled,
-      cardDictionary: this.cardDictionary,
+      eventDictionary: this.eventDictionary,
     });
     var nar = await bound(); // Activate the async generator
     var bid = {
       name: name,
       priority: prio,
       narrative: nar,
-      expressions: new Card(),
+      expressions: new Set(),
       stepIndex: 0, // Initialize step index
     };
     this._running.push(bid);
-    // Add card references to the dictionary
-    /*const cardTypes = this.extractCardTypesFromNarrative([...nar]);
-              cardTypes.forEach((cardType) =>
-                this._cardDictionary.addCardReference(cardType, name)
-              );*/
+    // Add event references to the dictionary
+    /*const eventTypes = this.extractEventTypesFromNarrative([...nar]);
+            eventTypes.forEach((eventType) =>
+              this._eventDictionary.addEventReference(eventType, name)
+            );*/
   }
 
   addAll(narratives, priorities) {
@@ -223,7 +332,7 @@ class Game {
     while (notEmpty(this._running)) {
       var bid = this._running.shift();
       var nar = bid.narrative;
-      var next = await nar.next(this._lastCard);
+      var next = await nar.next(this._lastEvent);
       if (!next.done) {
         var newbid = next.value; // Run an iteration of the async generator
         newbid.narrative = nar; // Bind the narrative to the bid for running later
@@ -236,9 +345,9 @@ class Game {
       }
     }
     // End of current part
-    this.selectNextCard();
-    if (this._lastCard) {
-      // There is an actual last card selected
+    this.selectNextEvent();
+    if (this._lastEvent) {
+      // There is an actual last event selected
       var temp = [];
       while (notEmpty(this._pending)) {
         bid = this._pending.shift();
@@ -260,8 +369,8 @@ class Game {
             waiting = { type: waiting };
           }
           if (
-            waiting.type === this._lastCard.type ||
-            (typeof waiting === "function" && waiting(this._lastCard))
+            waiting.type === this._lastEvent.type ||
+            (typeof waiting === "function" && waiting(this._lastEvent))
           ) {
             cur = true;
           }
@@ -277,7 +386,7 @@ class Game {
       await this.run(onUpdate); // Pass the onUpdate callback to the next call
     } else {
       // Nothing was selected - end of super-step
-      this._lastCard = undefined; // Gotcha: null is not the same as undefined
+      this._lastEvent = undefined; // Gotcha: null is not the same as undefined
 
       if (typeof onUpdate === "function") {
         onUpdate(this); // Invoke the onUpdate callback after the game runs a step
@@ -285,10 +394,10 @@ class Game {
     }
   }
 
-  selectNextCard() {
+  selectNextEvent() {
     var i, j, k;
     var candidates = [];
-    var cards = [];
+    var events = [];
     for (i = 0; i < this._pending.length; i++) {
       var bid = this._pending[i];
       if (bid.request) {
@@ -304,7 +413,7 @@ class Game {
           }
           var c = {
             priority: bid.priority,
-            card: e,
+            event: e,
           };
           candidates.push(c);
         }
@@ -322,7 +431,7 @@ class Game {
           }
           for (k = 0; k < bid.block.length; k++) {
             var blocked = bid.block[k];
-            e = candidate.card;
+            e = candidate.event;
 
             // Convert string `block: 'FOO'` into `block: { type: 'FOO'}`
             if (typeof blocked === "string") {
@@ -339,16 +448,16 @@ class Game {
         }
       }
       if (ok) {
-        cards.push(candidate);
+        events.push(candidate);
       }
     }
-    if (cards.length > 0) {
-      cards.sort(compareBids);
-      this._lastCard = cards[0].card;
-      this._lastCard.priority = cards[0].priority;
-      this._story.push(this._lastCard);
+    if (events.length > 0) {
+      events.sort(compareBids);
+      this._lastEvent = events[0].event;
+      this._lastEvent.priority = events[0].priority;
+      this._story.push(this._lastEvent);
     } else {
-      this._lastCard = null;
+      this._lastEvent = null;
     }
   }
   modifyPriority(name, newPriority) {
@@ -394,6 +503,8 @@ class Game {
       }
     }
   }
+
+  // It would be useful to have an extractEventTypesFromNarrative(narrative)
 }
 
 export default Game;
