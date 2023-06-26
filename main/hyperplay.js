@@ -1,5 +1,5 @@
 import Game from "./game.js";
-import Hyperswarm from "hyperswarm";
+import HyperswarmWeb from "hyperswarm-web";
 import goodbye from "graceful-goodbye";
 import crypto from "hypercore-crypto";
 import b4a from "b4a";
@@ -28,22 +28,31 @@ class Play extends Game {
     this._namemap = new Map();
     this._expressions = [];
 
-    // Initialize hyperswarm instance
-    this.swarm = new Hyperswarm();
+    // Initialize hyperswarm-web instance
+    this.swarm = HyperswarmWeb({
+      bootstrap: ["ws://localhost:4977"],
+      simplePeer: {
+        config: {
+          iceServers: [
+            // Add your STUN/TURN servers here.
+            // A STUN server example: { urls: 'stun:stun.l.google.com:19302' }
+            // A TURN server example: { urls: 'turn:192.158.29.39:3478?transport=udp', username: '28224511:1379330808', credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=' }
+          ], // Add ICE servers here
+        },
+      },
+    });
+
     goodbye(() => this.swarm.destroy());
 
     // Join a common space
     this.space = spaces ? b4a.from(spaces, "hex") : crypto.randomBytes(32);
-    this.discovery = this.swarm.join(this.space, {
-      client: true,
-      server: true,
-    });
+    this.swarm.join(this.space);
 
     this.swarm.on("connection", this.handleConnection.bind(this));
   }
 
-  handleConnection(conn) {
-    const name = b4a.toString(conn.remotePublicKey, "hex");
+  handleConnection(conn, details) {
+    const name = b4a.toString(details.peer.remotePublicKey, "hex");
     this._namemap.set(name, generatePlayerId());
     console.log("* got a connection from:", this._namemap.get(name), "*");
     this._conns.push(conn);
