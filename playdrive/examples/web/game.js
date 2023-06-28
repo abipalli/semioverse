@@ -198,8 +198,8 @@ class Game extends Card {
   /*
   get expressions() {
     return new Set(this._expressions);
-  }
-*/
+  }*/
+
   get running() {
     return [...this._running];
   }

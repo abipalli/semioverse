@@ -1,3 +1,24 @@
+const HyperswarmWeb = require("hyperswarm-web");
+const goodbye = require("graceful-goodbye");
+const crypto = require("hypercore-crypto");
+const b4a = require("b4a");
+const JSOG = require("jsog");
+
+function generatePlayerId() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const idLength = 8;
+  let playerId = "";
+
+  for (let i = 0; i < idLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randomChar = characters.charAt(randomIndex);
+    playerId += randomChar;
+  }
+
+  return playerId;
+}
+
 const isEmpty = function (arr) {
   return arr.length == 0;
 };
@@ -44,7 +65,7 @@ class EventDictionary extends Map {
   }
 }
 
-export class Card extends Map {
+class Card extends Map {
   constructor(name, ...args) {
     super(...args);
     this.name = name;
@@ -195,11 +216,13 @@ class Game extends Card {
   get story() {
     return [...this._story];
   }
+
   /*
   get expressions() {
     return new Set(this._expressions);
   }
-*/
+  */
+
   get running() {
     return [...this._running];
   }
@@ -507,4 +530,95 @@ class Game extends Card {
   // It would be useful to have an extractEventTypesFromNarrative(narrative)
 }
 
-export default Game;
+class Play extends Game {
+  constructor(spaces, ...args) {
+    super(...args);
+    super.newGame();
+    this._conns = [];
+    this._namemap = new Map();
+    // this._expressions = new Set();
+
+    // Initialize hyperswarm-web instance
+    this.swarm = HyperswarmWeb({
+      bootstrap: ["ws://localhost:4977"],
+      simplePeer: {
+        config: {
+          iceServers: [
+            // Add your STUN/TURN servers here.
+            // A STUN server example: { urls: 'stun:stun.l.google.com:19302' }
+            // A TURN server example: { urls: 'turn:192.158.29.39:3478?transport=udp', username: '28224511:1379330808', credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=' }
+          ], // Add ICE servers here
+        },
+      },
+    });
+
+    goodbye(() => this.swarm.destroy());
+
+    // Join a common space
+    console.log("this.space:", this.space);
+    console.log("Type of this.space:", typeof this.space);
+    //this.space = spaces ? b4a.from(spaces, "hex") : crypto.randomBytes(32);
+    this.space = crypto
+      .createHash("sha256")
+      .update("my-hyperswarm-topic")
+      .digest();
+    this.swarm.join(this.space);
+
+    this.swarm.on("connection", this.handleConnection.bind(this));
+  }
+
+  handleConnection(conn, details) {
+    const name = b4a.toString(details.peer.remotePublicKey, "hex");
+    this._namemap.set(name, generatePlayerId());
+    console.log("* got a connection from:", this._namemap.get(name), "*");
+    this._conns.push(conn);
+
+    conn.on("error", (error) => {
+      console.error(
+        `Error on connection with ${this._namemap.get(name)}:`,
+        error
+      );
+      this.removeConnection(conn);
+    });
+
+    conn.once("close", () => this.removeConnection(conn));
+    conn.on("data", this.handleData.bind(this));
+  }
+
+  removeConnection(conn) {
+    const index = this._conns.indexOf(conn);
+    if (index > -1) {
+      this._conns.splice(index, 1);
+      console.log(
+        "Connection removed. Remaining connections:",
+        this._conns.length
+      );
+    }
+  }
+
+  handleData(data) {
+    // Parse the received data
+    const expr = JSOG.parse(data.toString());
+    this.expressions.add(expr);
+
+    // Send the data to all games
+    console.log("expr:", expr);
+    this.sendToGames(expr);
+  }
+
+  broadcast(data) {
+    // Stringify the data preserving any circular references
+    const dataString = JSOG.stringify(data);
+    console.log("Broadcast: ", dataString);
+    // Send the data string to every connection
+    this._conns.forEach((conn) => {
+      conn.write(dataString);
+    });
+  }
+
+  sendToGames(data) {
+    for (let game of this.games) {
+      game.send(data);
+    }
+  }
+}

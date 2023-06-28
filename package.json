@@ -18,6 +18,7 @@
         "d3-selection": "^3.0.0",
         "d3-transition": "^3.0.1",
         "express": "^4.18.2",
+        "fastify": "^4.18.0",
         "graceful-goodbye": "^1.2.1",
         "hyperswarm": "^4.5.0",
         "hyperswarm-web": "^2.2.0",
@@ -26,6 +27,7 @@
         "mississippi": "^4.0.0",
         "object-hash": "^3.0.0",
         "ramo": "^0.1.2",
+        "socket.io": "^4.7.0",
         "uuid": "^9.0.0",
         "xstate": "^4.37.2"
     },

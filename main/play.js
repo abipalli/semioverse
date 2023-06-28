@@ -26,7 +26,6 @@ class Play extends Game {
     super.newGame();
     this._conns = [];
     this._namemap = new Map();
-    this._expressions = [];
 
     // Initialize hyperswarm instance
     this.swarm = new Hyperswarm();
@@ -40,6 +39,12 @@ class Play extends Game {
     });
 
     this.swarm.on("connection", this.handleConnection.bind(this));
+
+    this.dataCallback = null;
+  }
+
+  setDataCallback(callback) {
+    this.dataCallback = callback;
   }
 
   handleConnection(conn) {
@@ -74,11 +79,15 @@ class Play extends Game {
   handleData(data) {
     // Parse the received data
     const expr = JSOG.parse(data.toString());
-    this._expressions.push(expr);
+    this.expressions.add(expr);
 
     // Send the data to all games
     console.log("expr:", expr);
     this.sendToGames(expr);
+
+    if (this.dataCallback) {
+      this.dataCallback(expr);
+    }
   }
 
   broadcast(data) {
@@ -97,11 +106,11 @@ class Play extends Game {
     }
   }
 }
-
+/*
 let play = new Play(
   "3c4387f8e27a94cf1891d7510d197168fd239190aeb67932e828830526d61fe5"
 );
 
 console.log(play);
-
+*/
 export default Play;

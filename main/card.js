@@ -134,9 +134,10 @@ export class InterfaceCard extends Card {
     styles = [],
     animations = [],
     interactions = [],
-    eventHandlers = []
+    eventHandlers = [],
+    ...args
   ) {
-    super();
+    super(...args);
     this.set("layers", layers);
     this.set("styles", new Card(styles));
     this.set("animations", new Card(animations));

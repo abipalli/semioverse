@@ -1,6 +1,8 @@
 import JSOG from "jsog";
 
-class Card extends Map {
+// add actorish message passing?
+
+export default class Card extends Map {
   constructor(name, ruleEngine = async () => true, ...args) {
     super(...args);
     this.name = name;
@@ -10,120 +12,101 @@ class Card extends Map {
     this.listeners = new Map();
     this.ruleEngine = ruleEngine;
 
-    class CardProxy {
-      constructor(card) {
-        if (!(card instanceof Card || card instanceof CardProxy)) {
-          throw new Error(
-            "CardProxy can only be used on Card instances or CardProxy instances"
-          );
+    return new Proxy(this, {
+      get: (target, prop, receiver) => {
+        if (typeof target[prop] === "function") {
+          // If it's a method from the Map prototype
+          if (!target.checkRule(target, prop)) {
+            throw new Error(`Access to ${prop} is not allowed`);
+          }
+
+          return function (...args) {
+            // Bind this to the original card and call the method
+            return target[prop].apply(target, args);
+          };
         }
-        return new Proxy(card, {
-          get: (target, prop, receiver) => {
-            if (typeof target[prop] === "function") {
-              // If it's a method from the Map prototype
-              if (!target.checkRule(target, prop)) {
-                throw new Error(`Access to ${prop} is not allowed`);
-              }
 
-              return function (...args) {
-                // Bind this to the original card and call the method
-                return target[prop].apply(target, args);
-              };
-            }
+        if (!target.checkRule(target, prop)) {
+          throw new Error(`Access to ${prop} is not allowed`);
+        }
 
-            if (!target.checkRule(target, prop)) {
-              throw new Error(`Access to ${prop} is not allowed`);
-            }
-
-            if (prop === "serialize") {
-              return () => JSOG.parse(target.serialize()); // Allow serialization through proxy
-            }
-
-            return Reflect.get(target, prop, receiver);
-          },
-          set: (target, prop, value, receiver) => {
-            if (!target.checkRule(target, prop, value)) {
-              throw new Error(`Modification of ${prop} is not allowed`);
-            }
-            return Reflect.set(target, prop, value, receiver);
-          },
-          has: (target, prop) => {
-            if (!target.checkRule(target, prop)) {
-              throw new Error(`Access to ${prop} is not allowed`);
-            }
-            return Reflect.has(target, prop);
-          },
-          deleteProperty: (target, prop) => {
-            if (!target.checkRule(target, prop)) {
-              throw new Error(`Modification of ${prop} is not allowed`);
-            }
-            return Reflect.deleteProperty(target, prop);
-          },
-          defineProperty: (target, prop, descriptor) => {
-            if (!target.checkRule(target, prop)) {
-              throw new Error(`Modification of ${prop} is not allowed`);
-            }
-            return Reflect.defineProperty(target, prop, descriptor);
-          },
-          ownKeys: (target) => {
-            // Check with ruleEngine if obtaining ownKeys is allowed
-            if (!target.checkRule(target, "ownKeys")) {
-              throw new Error("Access to ownKeys is not allowed");
-            }
-            return Reflect.ownKeys(target);
-          },
-          getOwnPropertyDescriptor: (target, prop) => {
-            if (!target.checkRule(target, prop)) {
-              throw new Error(`Access to ${prop} is not allowed`);
-            }
-            return Reflect.getOwnPropertyDescriptor(target, prop);
-          },
-          getPrototypeOf: (target) => {
-            // Check with ruleEngine if obtaining prototype is allowed
-            if (!target.checkRule(target, "getPrototypeOf")) {
-              throw new Error("Access to prototype is not allowed");
-            }
-            return Reflect.getPrototypeOf(target);
-          },
-          setPrototypeOf: (target, proto) => {
-            // Check with ruleEngine if setting prototype is allowed
-            if (!target.checkRule(target, "setPrototypeOf")) {
-              throw new Error("Setting prototype is not allowed");
-            }
-            return Reflect.setPrototypeOf(target, proto);
-          },
-          isExtensible: (target) => {
-            // Check with ruleEngine if checking extensibility is allowed
-            if (!target.checkRule(target, "isExtensible")) {
-              throw new Error("Checking extensibility is not allowed");
-            }
-            return Reflect.isExtensible(target);
-          },
-          preventExtensions: (target) => {
-            // Check with ruleEngine if preventing extensions is allowed
-            if (!target.checkRule(target, "preventExtensions")) {
-              throw new Error("Preventing extensions is not allowed");
-            }
-            return Reflect.preventExtensions(target);
-          },
-          // Note: apply and construct traps are for function objects, and may not be applicable to the Card class, although they may be applicable to narratives.
-          apply: (target, thisArg, args) => {
-            if (!target.checkRule(target, "apply", args)) {
-              throw new Error("Applying is not allowed");
-            }
-            return Reflect.apply(target, thisArg, args);
-          },
-          construct: (target, args) => {
-            if (!target.checkRule(target, "construct", args)) {
-              throw new Error("Construction is not allowed");
-            }
-            return Reflect.construct(target, args);
-          },
-        });
-      }
-    }
-
-    return new CardProxy(this);
+        return Reflect.get(target, prop, receiver);
+      },
+      set: (target, prop, value, receiver) => {
+        if (!target.checkRule(target, prop, value)) {
+          throw new Error(`Modification of ${prop} is not allowed`);
+        }
+        return Reflect.set(target, prop, value, receiver);
+      },
+      has: (target, prop) => {
+        if (!target.checkRule(target, prop)) {
+          throw new Error(`Access to ${prop} is not allowed`);
+        }
+        return Reflect.has(target, prop);
+      },
+      deleteProperty: (target, prop) => {
+        if (!target.checkRule(target, prop)) {
+          throw new Error(`Modification of ${prop} is not allowed`);
+        }
+        return Reflect.deleteProperty(target, prop);
+      },
+      defineProperty: (target, prop, descriptor) => {
+        if (!target.checkRule(target, prop)) {
+          throw new Error(`Modification of ${prop} is not allowed`);
+        }
+        return Reflect.defineProperty(target, prop, descriptor);
+      },
+      ownKeys: (target) => {
+        if (!target.checkRule(target, "ownKeys")) {
+          throw new Error("Access to ownKeys is not allowed");
+        }
+        return Reflect.ownKeys(target);
+      },
+      getOwnPropertyDescriptor: (target, prop) => {
+        if (!target.checkRule(target, prop)) {
+          throw new Error(`Access to ${prop} is not allowed`);
+        }
+        return Reflect.getOwnPropertyDescriptor(target, prop);
+      },
+      getPrototypeOf: (target) => {
+        if (!target.checkRule(target, "getPrototypeOf")) {
+          throw new Error("Access to prototype is not allowed");
+        }
+        return Reflect.getPrototypeOf(target);
+      },
+      setPrototypeOf: (target, proto) => {
+        if (!target.checkRule(target, "setPrototypeOf")) {
+          throw new Error("Setting prototype is not allowed");
+        }
+        return Reflect.setPrototypeOf(target, proto);
+      },
+      isExtensible: (target) => {
+        if (!target.checkRule(target, "isExtensible")) {
+          throw new Error("Checking extensibility is not allowed");
+        }
+        return Reflect.isExtensible(target);
+      },
+      preventExtensions: (target) => {
+        // Check with ruleEngine if preventing extensions is allowed
+        if (!target.checkRule(target, "preventExtensions")) {
+          throw new Error("Preventing extensions is not allowed");
+        }
+        return Reflect.preventExtensions(target);
+      },
+      // Note: apply and construct traps are for function objects, and may not be applicable to the Card class, although they may be applicable to narrative generator.
+      apply: (target, thisArg, args) => {
+        if (!target.checkRule(target, "apply", args)) {
+          throw new Error("Applying is not allowed");
+        }
+        return Reflect.apply(target, thisArg, args);
+      },
+      construct: (target, args) => {
+        if (!target.checkRule(target, "construct", args)) {
+          throw new Error("Construction is not allowed");
+        }
+        return Reflect.construct(target, args);
+      },
+    });
   }
 
   /*
@@ -168,11 +151,7 @@ class Card extends Map {
     let map = this;
     let initmap = map;
     for await (const path of paths) {
-      if (
-        map instanceof Map ||
-        map instanceof Card ||
-        map instanceof CardProxy
-      ) {
+      if (map instanceof Map || map instanceof Card) {
         if (Array.isArray(path)) {
           const [actualPath, rule] = path;
           if (typeof rule === "function" && !rule()) {
@@ -224,11 +203,7 @@ class Card extends Map {
           if (!peek.done && currentCard.has(peek.value)) {
             const nextPath = peek.value;
             const nextCard = currentCard.get(nextPath);
-            if (
-              nextCard instanceof Map ||
-              nextCard instanceof Card ||
-              nextCard instanceof CardProxy
-            ) {
+            if (nextCard instanceof Map || nextCard instanceof Card) {
               previousCard = currentCard;
               currentCard = nextCard;
               path = nextPath;
@@ -382,7 +357,7 @@ class Card extends Map {
 
         if (d < depth) {
           for (const [key, value] of src.entries()) {
-            if (value instanceof Card || value instanceof CardProxy) {
+            if (value instanceof Card) {
               const childCopy = new Card();
               dest.set(key, childCopy);
               queue.push([value, childCopy, d + 1]);
@@ -414,11 +389,7 @@ class Card extends Map {
 function cardToJSON(card) {
   // Convert the Map to an array of key-value pairs
   const mapData = Array.from(card.entries()).map(([key, value]) => {
-    if (
-      value instanceof Map ||
-      value instanceof Card ||
-      value instanceof CardProxy
-    ) {
+    if (value instanceof Map || value instanceof Card) {
       return [key, cardToJSON(value)];
     } else {
       return [key, value];
@@ -462,7 +433,7 @@ function cardFromJSON(json) {
 }
 
 function condTransformExtension(card, source, target, mapping, rules) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -498,7 +469,7 @@ function condTransformExtension(card, source, target, mapping, rules) {
 }
 
 function condDissAssociatorExtension(card, source, rules) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -534,7 +505,7 @@ function delegatorExtension(
   loopCondition,
   ...args
 ) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -548,7 +519,7 @@ function delegatorExtension(
 }
 
 function eventExtension(card) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -583,7 +554,7 @@ function eventDelegatorExtension(
   eventCard,
   ...args
 ) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -619,7 +590,7 @@ function eventDelegatorExtension(
 }
 
 function runnerExtension(card) {
-  if (!(card instanceof Card || card instanceof CardProxy)) {
+  if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
 
@@ -645,11 +616,11 @@ function runnerExtension(card) {
 const card = new Card("testCard");
 console.log("Card: ", card);
 
-const serializedCard = JSOG.stringify(cardToJSON(card)); // Uses standalone function with CardProxy
+const serializedCard = JSOG.stringify(cardToJSON(card));
 console.log("Serialized Card: ", serializedCard);
 
 console.log("Thread: ", await card.thread(card));
 
 const deserializedData = JSOG.parse(serializedCard);
-const restoredCard = cardFromJSON(deserializedData); // Uses standalone function with CardProxy
+const restoredCard = cardFromJSON(deserializedData);
 console.log("Restored Card: ", restoredCard);

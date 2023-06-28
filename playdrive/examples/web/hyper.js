@@ -26,7 +26,7 @@ class Play extends Game {
     super.newGame();
     this._conns = [];
     this._namemap = new Map();
-    this._expressions = [];
+    //this._expressions = [];
 
     // Initialize hyperswarm-web instance
     this.swarm = HyperswarmWeb({
@@ -46,6 +46,9 @@ class Play extends Game {
 
     // Join a common space
     this.space = spaces ? b4a.from(spaces, "hex") : crypto.randomBytes(32);
+
+    console.log(this.space);
+    console.log(this.space.length);
     this.swarm.join(this.space);
 
     this.swarm.on("connection", this.handleConnection.bind(this));
@@ -83,7 +86,7 @@ class Play extends Game {
   handleData(data) {
     // Parse the received data
     const expr = JSOG.parse(data.toString());
-    this._expressions.push(expr);
+    this._expressions.add(expr);
 
     // Send the data to all games
     console.log("expr:", expr);

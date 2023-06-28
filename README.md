@@ -65,6 +65,28 @@ This mirrors the way human cognition often works: we constantly make connections
 
 With metaphor-dive, the Card graph could potentially support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It could enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph could evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
 
+# Install
+
+In the future distributed networking will occur in the browser with no need for installation. Currently however, using hyperswarm requires us to run locally using node.
+
+For now, download the repo:
+
+In one command line window:
+
+```bash
+npm install
+cd main
+node index.js
+```
+
+In another command line window:
+
+```bash
+http-server
+```
+
+Open the browser and go to http://127.0.0.1:8080
+
 # Onwards!
 
 The Card class and its associated methods can lead to some exciting possibilities. Its design allows it to be flexible and versatile, making it a powerful tool in a variety of computational and semiotic contexts. Here are some possibilities:
