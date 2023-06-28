@@ -1,6 +1,39 @@
 import { v4 as uuid } from "uuid";
 import Card from "./proxycard.js";
 
+export class ElementMap extends Map {
+  constructor() {
+    super();
+  }
+
+  // Associate a new SVG element with a specific object
+  newElement(svgElement, associatedObject) {
+    const id = "#" + uuid();
+    svgElement.attr("id", id);
+    this.set(id, associatedObject);
+    return id;
+  }
+
+  // Retrieve the object associated with a given SVG element
+  getElementObject(svgElementId) {
+    const obj = this.get(svgElementId);
+    if (!obj) {
+      console.log(`No object associated with SVG element ${svgElementId}`);
+    }
+    return obj;
+  }
+
+  // Update the object associated with a given SVG element
+  updateElementObject(svgElementId, newObject) {
+    if (!this.has(svgElementId)) {
+      console.log(
+        `No object associated with SVG element ${svgElementId} to update`
+      );
+    }
+    this.set(svgElementId, newObject);
+  }
+}
+
 export class InterfaceCard extends Card {
   constructor(
     name,
@@ -134,38 +167,5 @@ export class InterfaceCard extends Card {
         }
       }
     }
-  }
-}
-
-export class ElementMap extends Map {
-  constructor() {
-    super();
-  }
-
-  // Associate a new SVG element with a specific object
-  newElement(svgElement, associatedObject) {
-    const id = "#" + uuid();
-    svgElement.attr("id", id);
-    this.set(id, associatedObject);
-    return id;
-  }
-
-  // Retrieve the object associated with a given SVG element
-  getElementObject(svgElementId) {
-    const obj = this.get(svgElementId);
-    if (!obj) {
-      console.log(`No object associated with SVG element ${svgElementId}`);
-    }
-    return obj;
-  }
-
-  // Update the object associated with a given SVG element
-  updateElementObject(svgElementId, newObject) {
-    if (!this.has(svgElementId)) {
-      console.log(
-        `No object associated with SVG element ${svgElementId} to update`
-      );
-    }
-    this.set(svgElementId, newObject);
   }
 }
