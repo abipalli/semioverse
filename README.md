@@ -18,6 +18,10 @@ The **interfacing interface** brings *mutability*, *extensiveness*, *interactivi
 
 ---
 
+**[Play! (telegram)](https://t.me/semioverse)**
+
+---
+
 **Play!** is an interface for navigating and transforming the Semioverse (a semiotic computing/programming environment). Players can connect, communicate, and engage in independent yet interoperable games. It functions as a symbol system where symbols are not just being used but continuously created and redefined.
 
 Each game represents a semiotic domain, a self-contained yet interoperable universe of meaning. Here, Game and Play serve as base classes for creating, interacting with, and sharing semioverses.
@@ -124,3 +128,7 @@ Open the browser and go to http://127.0.0.1:8080
 The code in this repository is by no means the only implimentation of these concepts, we are currently exploring these concepts through a relational-programming paradigm:
 
 https://docs.google.com/document/d/1iy59rRTpHwqwyyHj7ZSTxyf4df6_yI8MwjgS1tA7zj8/edit
+
+# Merge to Earn
+
+We will be setting up [Merge to Earn](https://mte.slice.so/) on this repository.
