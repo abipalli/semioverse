@@ -1,15 +1,11 @@
-import JSOG from "jsog";
-
-// add actorish message passing?
-
 export default class Card extends Map {
-  constructor(name, ruleEngine = async () => true, ...args) {
+  constructor(name, value, ruleEngine = async () => true, ...args) {
     super(...args);
     this.name = name;
+    this.value = value;
     this.positions = new Set();
-    this.transforms = new Set();
+    //this._messages = []; // add actorish message passing?
     this.expressions = new Set();
-    this.listeners = new Map();
     this.ruleEngine = ruleEngine;
 
     return new Proxy(this, {
@@ -87,7 +83,6 @@ export default class Card extends Map {
         return Reflect.isExtensible(target);
       },
       preventExtensions: (target) => {
-        // Check with ruleEngine if preventing extensions is allowed
         if (!target.checkRule(target, "preventExtensions")) {
           throw new Error("Preventing extensions is not allowed");
         }
@@ -109,41 +104,6 @@ export default class Card extends Map {
     });
   }
 
-  /*
-    //In order to automatically trigger this event whenever data in a Card changes:
-    set(key, value) {
-      const result = super.set(key, value);
-      this.emit("change", key, value);
-      return result;
-    }
-    */
-
-  on(eventName, callback) {
-    if (!this.listeners.has(eventName)) {
-      this.listeners.set(eventName, []);
-    }
-    this.listeners.get(eventName).push(callback);
-  }
-
-  off(eventName, callback) {
-    if (this.listeners.has(eventName)) {
-      const eventListeners = this.listeners.get(eventName);
-      this.listeners.set(
-        eventName,
-        eventListeners.filter((listener) => listener !== callback)
-      );
-    }
-  }
-
-  emit(eventName, ...args) {
-    if (this.listeners.has(eventName)) {
-      const eventListeners = this.listeners.get(eventName);
-      for (const listener of eventListeners) {
-        listener(...args);
-      }
-    }
-  }
-
   async thread(...paths) {
     if (!(await this.checkRule(this, "thread", paths))) {
       throw new Error(`Call to thread is not allowed`);
@@ -152,22 +112,10 @@ export default class Card extends Map {
     let initmap = map;
     for await (const path of paths) {
       if (map instanceof Map || map instanceof Card) {
-        if (Array.isArray(path)) {
-          const [actualPath, rule] = path;
-          if (typeof rule === "function" && !rule()) {
-            break;
-          }
-          if (!map.has(actualPath)) {
-            map.set(actualPath, new Card());
-          }
-          map = map.get(actualPath);
-        } else {
-          if (!map.has(path)) {
-            console.log("foseihfoseifh:", new Card());
-            map.set(path, new Card());
-          }
-          map = map.get(path);
+        if (!map.has(path)) {
+          map.set(path, new Card());
         }
+        map = map.get(path);
       } else {
         throw new Error("map is not instanceof Map or Card");
         // break
@@ -184,6 +132,210 @@ export default class Card extends Map {
       await this.thread(...thread);
     }
   }
+
+  async *navigate(pathsOrGenerator) {
+    if (!(await this.checkRule(this, "navigate", pathsOrGenerator))) {
+      throw new Error(`Call to navigate is not allowed`);
+    }
+    let currentCard = this;
+    let previousCard = null;
+
+    const pathsIterator =
+      Symbol.iterator in pathsOrGenerator
+        ? pathsOrGenerator[Symbol.iterator]()
+        : pathsOrGenerator;
+
+    for await (let { value: path, done } of pathsIterator) {
+      if (!done) {
+        if (path === "metaphor-dive") {
+          // as a reserved keyword we must make sure that it cant be used as a key elsewhere
+          const peek = pathsIterator.next();
+          if (!peek.done && currentCard.has(peek.value)) {
+            const nextPath = peek.value;
+            const nextCard = currentCard.get(nextPath);
+            if (nextCard instanceof Map || nextCard instanceof Card) {
+              previousCard = currentCard;
+              currentCard = nextCard;
+              path = nextPath;
+            }
+          }
+        } else if (currentCard.has(path)) {
+          previousCard = currentCard;
+          currentCard = currentCard.get(path);
+        } else {
+          return; // would be nice to indicate where the failure occured
+        }
+        if (previousCard) {
+          let positions = currentCard.positions;
+          if (!positions) {
+            positions = new Set();
+            currentCard.positions = positions;
+          }
+          positions.add(
+            Object.freeze({ previousCard: previousCard, pathTaken: path })
+          );
+
+          // Cleaning up the positions set
+          for (let pos of positions) {
+            if (pos.previousCard.get(pos.pathTaken) !== currentCard) {
+              positions.delete(pos);
+            }
+          }
+        }
+
+        yield {
+          previousCard: previousCard,
+          pathTaken: path,
+          currentCard: currentCard,
+        };
+      }
+    }
+  }
+
+  async *swap(key, value, ...routes) {
+    if (!(await this.checkRule(this, "swap", [key, value, ...routes]))) {
+      throw new Error(`Call to swap is not allowed`);
+    }
+
+    for await (const route of routes) {
+      const routeIterator =
+        Symbol.iterator in route ? route[Symbol.iterator]() : route;
+
+      let iterator = this.navigate(routeIterator);
+      let result = await iterator.next();
+      let originalKey;
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done) {
+          originalKey = result.value.pathTaken;
+          if (result.value.currentCard.has(originalKey)) {
+            // Save the original value before overwriting
+            const originalValue = result.value.currentCard.get(originalKey);
+            // Overwrite the original entry with the new key-value pair
+            result.value.currentCard.delete(originalKey);
+            result.value.currentCard.set(key, value);
+            // Yield the removed entry
+            yield { key: originalKey, value: originalValue };
+          }
+        }
+        result = nextResult;
+      }
+    }
+  }
+
+  // Substitute Metonym : Substituting the Value
+  async *substituteValue(substitute, ...routes) {
+    if (
+      !(await this.checkRule(this, "substituteValue", [substitute, ...routes]))
+    ) {
+      throw new Error(`Call to substitute is not allowed`);
+    }
+    for await (const route of routes) {
+      const routeIterator =
+        Symbol.iterator in route ? route[Symbol.iterator]() : route;
+      let iterator = this.navigate(routeIterator);
+      let result = await iterator.next();
+      let destinationKey;
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done) {
+          // Corrected this line
+          destinationKey = result.value.pathTaken;
+          if (result.value.currentCard.has(destinationKey)) {
+            if (substitute instanceof Card) {
+              result.value.currentCard.set(destinationKey, substitute);
+            } else {
+              result.value.currentCard
+                .get(destinationKey)
+                .set("value", substitute);
+            }
+          }
+        }
+        result = nextResult;
+      }
+    }
+  }
+
+  async *mergeCards(card1, card2) {
+    for (let [key, value] of card1.entries()) {
+      if (card2.has(key)) {
+        const existingValue = card2.get(key);
+        if (value instanceof Card && existingValue instanceof Card) {
+          // If both are Cards, merge them
+          yield* this.mergeCards(value, existingValue);
+        } else {
+          // If one isn't a Card, create a new Card with both values as keys
+          // Using null as the special end-of-graph object
+          const newCard = new Card();
+          newCard.set(value, null);
+          newCard.set(existingValue, null);
+          card2.set(key, newCard);
+          yield { status: "merged", key, value: newCard };
+        }
+      } else {
+        card2.set(key, value);
+        yield { status: "added", key, value };
+      }
+    }
+  }
+
+  // Substitue Metaphor : Substituting the Key associated with a value
+  // Reassociate Value ?
+  async *substituteKey(substituteKey, ...routes) {
+    if (
+      !(await this.checkRule(this, "substituteKey", [substituteKey, ...routes]))
+    ) {
+      throw new Error(`Call to substituteKey is not allowed`);
+    }
+
+    for await (const route of routes) {
+      const routeIterator =
+        Symbol.iterator in route ? route[Symbol.iterator]() : route;
+
+      let iterator = this.navigate(routeIterator);
+      let result = await iterator.next();
+      let originalKey;
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done) {
+          originalKey = result.value.pathTaken;
+          if (result.value.currentCard.has(originalKey)) {
+            const originalValue = result.value.currentCard.get(originalKey);
+
+            if (result.value.currentCard.has(substituteKey)) {
+              const existingValue = result.value.currentCard.get(substituteKey);
+
+              if (
+                originalValue instanceof Card &&
+                existingValue instanceof Card
+              ) {
+                const mergeGen = this.mergeCards(originalValue, existingValue);
+                let mergeNext = await mergeGen.next();
+                while (!mergeNext.done) {
+                  mergeNext = await mergeGen.next();
+                }
+                result.value.currentCard.set(substituteKey, existingValue);
+              } else {
+                // If one isn't a Card, create a new Card with both values as keys
+                // Using null as the special end-of-graph object
+                const newCard = new Card();
+                newCard.set(originalValue, null);
+                newCard.set(existingValue, null);
+                result.value.currentCard.set(substituteKey, newCard);
+              }
+            } else {
+              result.value.currentCard.set(substituteKey, originalValue);
+            }
+
+            result.value.currentCard.delete(originalKey);
+          }
+        }
+        result = nextResult;
+      }
+    }
+  }
+
+  /*
   async *navigate(pathsOrGenerator) {
     if (!(await this.checkRule(this, "navigate", pathsOrGenerator))) {
       throw new Error(`Call to navigate is not allowed`);
@@ -239,11 +391,44 @@ export default class Card extends Map {
     }
   }
 
-  async *substitute(substitute, destinationkey, ...routes) {
+  async *substitute(destinationValueSubstitute, ...routes) {
     if (
       !(await this.checkRule(this, "substitute", [
-        substitute,
-        destinationkey,
+        destinationValueSubstitute,
+        ...routes,
+      ]))
+    ) {
+      throw new Error(`Call to substitute is not allowed`);
+    }
+    for await (const route of routes) {
+      const routeIterator =
+        Symbol.iterator in route ? route[Symbol.iterator]() : route;
+      let iterator = this.navigate(routeIterator);
+      let result = await iterator.next();
+      let destinationKey;
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done) {
+          destinationKey = result.value;
+          if (destinationValueSubstitute instanceof Card) {
+            result.value.set(destinationKey, destinationValueSubstitute);
+          } else {
+            result.value
+              .get(destinationKey)
+              .set("value", destinationValueSubstitute);
+          }
+        }
+        result = nextResult;
+      }
+    }
+  }
+
+  /*
+  async *substitute(destinationKey, destinationValueSubstitute, ...routes) {
+    if (
+      !(await this.checkRule(this, "substitute", [
+        destinationKey,
+        destinationValueSubstitute,
         ...routes,
       ]))
     ) {
@@ -256,9 +441,14 @@ export default class Card extends Map {
       let result = await iterator.next();
       while (!result.done) {
         let nextResult = await iterator.next();
-        if (nextResult.done && result.value.has(destinationkey)) {
-          result.value.set(destinationkey, new Card());
-          result.value.get(destinationkey).set("value", substitute);
+        if (nextResult.done && result.value.has(destinationKey)) {
+          if (destinationValueSubstitute instanceof Card) {
+            result.value.set(destinationKey, destinationValueSubstitute);
+          } else {
+            result.value
+              .get(destinationKey)
+              .set("value", destinationValueSubstitute);
+          }
         } else if (nextResult.done) {
           continue;
         }
@@ -266,18 +456,7 @@ export default class Card extends Map {
       }
     }
   }
-
-  // this should be moved to the extension?
-  async transform() {
-    if (!(await this.checkRule(this, "transform"))) {
-      throw new Error(`Call to transform is not allowed`);
-    }
-    const transformedCards = [];
-    for (const transform of this.transforms) {
-      transformedCards.push(transform.get("applyTo")(this));
-    }
-    return transformedCards;
-  }
+*/
 
   async snapshot(depth) {
     if (!(await this.checkRule(this, "snapshot", [depth]))) {
@@ -384,61 +563,3 @@ export default class Card extends Map {
     return await this.ruleEngine(target, prop, value);
   }
 }
-
-function cardToJSON(card) {
-  // Convert the Map to an array of key-value pairs
-  const mapData = Array.from(card.entries()).map(([key, value]) => {
-    if (value instanceof Map || value instanceof Card) {
-      return [key, cardToJSON(value)];
-    } else {
-      return [key, value];
-    }
-  });
-
-  return {
-    __type__: "Card",
-    name: card.name,
-    positions: Array.from(card.positions),
-    transforms: Array.from(card.transforms),
-    expressions: Array.from(card.expressions),
-    ruleEngine: `async function ruleEngine${card.ruleEngine
-      .toString()
-      .slice("function".length)}`,
-    mapData,
-  };
-}
-
-function cardFromJSON(json) {
-  // Create a new Card through the factory to ensure it has a proxy
-  let card = new Card(
-    json.name,
-    eval(`(function() { return ${json.ruleEngine}; })()`)
-  );
-
-  json.positions.forEach((pos) => card.positions.add(pos));
-  json.transforms.forEach((trans) => card.transforms.add(trans));
-  json.expressions.forEach((expr) => card.expressions.add(expr));
-
-  // Populate the Map from the array of key-value pairs
-  json.mapData.forEach(([key, value]) => {
-    if (value && value.__type__ === "Card") {
-      card.set(key, cardFromJSON(value)); // Recursively restore Card instances
-    } else {
-      card.set(key, value);
-    }
-  });
-
-  return card;
-}
-
-const card = new Card("testCard");
-console.log("Card: ", card);
-
-const serializedCard = JSOG.stringify(cardToJSON(card));
-console.log("Serialized Card: ", serializedCard);
-
-console.log("Thread: ", await card.thread(card));
-
-const deserializedData = JSOG.parse(serializedCard);
-const restoredCard = cardFromJSON(deserializedData);
-console.log("Restored Card: ", restoredCard);

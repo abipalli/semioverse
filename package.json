@@ -3,11 +3,11 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
+    "type": "module",
     "license": "ISC",
     "browser": {
         "hyperswarm": "hyperswarm-web"
@@ -28,6 +28,7 @@
         "object-hash": "^3.0.0",
         "ramo": "^0.1.2",
         "socket.io": "^4.7.0",
+        "twilio": "^4.13.0",
         "uuid": "^9.0.0",
         "xstate": "^4.37.2"
     },

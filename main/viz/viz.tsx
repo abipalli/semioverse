@@ -1,3 +1,5 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import Button from '@components/Button'
 import Column from '@components/Column'
@@ -5,6 +7,7 @@ import DropDown from '@components/DropDown'
 import DropDownMenu from '@components/DropDownMenu'
 import Input from '@components/Input'
 import Row from '@components/Row'
+import CommentCard from '@components/cards/Comments/CommentCard'
 import PostCard from '@components/cards/PostCard/PostCard'
 import Modal from '@components/modals/Modal'
 import { AccountContext } from '@contexts/AccountContext'
@@ -13,10 +16,11 @@ import { SpaceContext } from '@contexts/SpaceContext'
 import { UserContext } from '@contexts/UserContext'
 import config from '@src/Config'
 import { getDraftPlainText, pluralise } from '@src/Helpers'
+import colors from '@styles/Colors.module.scss'
 import { ArrowDownIcon } from '@svgs/all'
 import axios from 'axios'
 import * as d3 from 'd3'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Cookies from 'universal-cookie'
 
 function LinkModal(props: {
@@ -32,15 +36,15 @@ function LinkModal(props: {
     const { spaceData, spacePosts, setSpacePosts } = useContext(SpaceContext)
     const { userPosts, setUserPosts } = useContext(UserContext)
     const { postData, setPostData } = useContext(PostContext)
-    const [linkDataNew, setLinkDataNew] = useState<any>(null)
-    const [linkData, setLinkData] = useState<any>({
-        IncomingPostLinks: [],
-        IncomingCommentLinks: [],
-        OutgoingPostLinks: [],
-        OutgoingCommentLinks: [],
-    })
-    const { IncomingPostLinks, IncomingCommentLinks, OutgoingPostLinks, OutgoingCommentLinks } =
-        linkData
+    const [linkData, setLinkData] = useState<any>(null)
+    // const [linkData, setLinkData] = useState<any>({
+    //     IncomingPostLinks: [],
+    //     IncomingCommentLinks: [],
+    //     OutgoingPostLinks: [],
+    //     OutgoingCommentLinks: [],
+    // })
+    // const { IncomingPostLinks, IncomingCommentLinks, OutgoingPostLinks, OutgoingCommentLinks } =
+    //     linkData
     const [loading, setLoading] = useState(true)
     const [addLinkLoading, setAddLinkLoading] = useState(false)
     const [newLinkTargetType, setNewLinkTargetType] = useState('Post')
@@ -48,8 +52,15 @@ function LinkModal(props: {
     const [newLinkDescription, setNewLinkDescription] = useState('')
     const [targetError, setTargetError] = useState(false)
     const [linkedItem, setLinkedItem] = useState<any>(null)
+    const [linkedItemOptions, setLinkedItemOptions] = useState<any[]>([])
     const [linkTypes, setLinkTypes] = useState('All Types')
     const [sizeBy, setSizeBy] = useState('Likes')
+    const [clickedSpaceUUID, setClickedSpaceUUID] = useState('')
+    const transitioning = useRef(true)
+    const domain = useRef<number[]>([0, 0])
+    const links = useRef<any>(null)
+    const nodes = useRef<any>(null)
+    const matchedNodeIds = useRef<number[]>([])
     const cookies = new Cookies()
     // const incomingLinks = IncomingPostLinks.length > 0 || IncomingCommentLinks.length > 0
     // const outgoingLinks = OutgoingPostLinks.length > 0 || OutgoingCommentLinks.length > 0
@@ -99,7 +110,7 @@ function LinkModal(props: {
         ],
     }
 
-    function modelType(type) {
+    function findModelType(type) {
         if (['card', 'bead'].includes(type)) return 'post'
         return type
     }
@@ -108,11 +119,11 @@ function LinkModal(props: {
         setLoading(true)
         const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
         axios
-            .get(`${config.apiURL}/links?itemType=${modelType(type)}&itemId=${id}`, options)
+            .get(`${config.apiURL}/links?itemType=${findModelType(type)}&itemId=${id}`, options)
             .then((res) => {
                 // console.log('link data: ', res.data)
                 // setLoading(false)
-                setLinkDataNew(res.data)
+                setLinkData(res.data)
                 // setLinkData(res.data)
                 setLoading(false)
             })
@@ -120,6 +131,7 @@ function LinkModal(props: {
     }
 
     function getLinkedItem(identifier) {
+        console.log('getLinkedItem: ', identifier)
         if (newLinkTargetType === 'Post') {
             const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
             axios
@@ -132,82 +144,132 @@ function LinkModal(props: {
                     setLinkedItem(null)
                 })
         }
+        if (newLinkTargetType === 'Comment') {
+            const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
+            axios
+                .get(`${config.apiURL}/comment-data?postId=${identifier}`, options)
+                .then((res) => {
+                    setLinkedItem(res.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    setLinkedItem(null)
+                })
+        }
+        if (newLinkTargetType === 'User') {
+            const data = {
+                query: identifier,
+                blacklist: [], // ...usersWhoHaveBlockedLinking],
+            } as any
+            axios
+                .post(`${config.apiURL}/find-people`, data)
+                .then((res) => {
+                    console.log('find-people: ', res.data)
+                    setLinkedItemOptions(res.data)
+                    // setLinkedItem(res.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    setLinkedItem(null)
+                })
+        }
     }
 
-    function updateContextState(action, linkedItemType, linkedItemId) {
-        const addingLink = action === 'add-link'
-        // update context state
-        let newPosts = [] as any
-        if (location === 'space-posts') newPosts = [...spacePosts]
-        if (location === 'user-posts') newPosts = [...userPosts]
-        if (location === 'post-page') newPosts = [{ ...postData }]
-        // update source item
-        if (modelType(itemType) === 'post') {
-            let item = newPosts.find((p) => p.id === (parentItemId || itemData.id))
-            if (itemType === 'bead') item = item.Beads.find((p) => p.id === itemData.id)
-            if (itemType === 'card') item = item.CardSides.find((p) => p.id === itemData.id)
-            item.totalLinks += addingLink ? 1 : -1
-            item.accountLinks += addingLink ? 1 : -1
+    function renderSourceItem() {
+        if (linkData) {
+            // console.log('linkData: ', linkData)
+            const { modelType } = linkData.item
+            if (modelType === 'post') return <PostCard post={linkData.item} location='link-modal' />
+            if (modelType === 'comment')
+                return (
+                    <CommentCard
+                        comment={linkData.item}
+                        highlighted={false}
+                        location='link-modal'
+                        toggleReplyInput={() => null}
+                        removeComment={() => null}
+                        editComment={() => null}
+                        updateCommentReactions={() => null}
+                    />
+                )
         }
-        // update target item
-        if (linkedItemType === 'Post') {
-            let item = newPosts.find((p) => p.id === linkedItemId)
-            if (!item) {
-                newPosts.forEach((post) => {
-                    const bead = post.Beads && post.Beads.find((b) => b.id === linkedItemId)
-                    const card = post.CardSides && post.CardSides.find((c) => c.id === linkedItemId)
-                    if (bead) item = bead
-                    if (card) item = card
-                })
-            }
-            item.totalLinks += addingLink ? 1 : -1
-            item.accountLinks += addingLink ? 1 : -1
-        }
-        if (location === 'space-posts') setSpacePosts(newPosts)
-        if (location === 'user-posts') setUserPosts(newPosts)
-        if (location === 'post-page') setPostData(newPosts[0])
+        return null
     }
 
-    function addLink() {
-        setAddLinkLoading(true)
-        const data = {
-            sourceType: modelType(itemType),
-            sourceId: itemData.id,
-            targetType: newLinkTargetType.toLowerCase(),
-            targetId: newLinkTargetId,
-            description: newLinkDescription,
-            spaceId: window.location.pathname.includes('/s/') ? spaceData.id : null,
-            accountHandle: accountData.handle,
-            accountName: accountData.name,
-        }
-        const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
-        axios
-            .post(`${config.apiURL}/add-link`, data, options)
-            .then((res) => {
-                console.log('add-link res: ', res.data)
-                const { target, link } = res.data
-                // update modal state
-                setNewLinkTargetId('')
-                setNewLinkDescription('')
-                setLinkData({
-                    ...linkData,
-                    [`Outgoing${newLinkTargetType}Links`]: [
-                        ...linkData[`Outgoing${newLinkTargetType}Links`],
-                        { ...link, Creator: accountData, [`Outgoing${newLinkTargetType}`]: target },
-                    ],
-                })
-                // update context state
-                updateContextState('add-link', newLinkTargetType, +newLinkTargetId)
-                setAddLinkLoading(false)
-            })
-            .catch((error) => {
-                console.log(error)
-                if (error.response && error.response.status === 404) {
-                    setTargetError(true)
-                    setAddLinkLoading(false)
-                }
-            })
-    }
+    // function updateContextState(action, linkedItemType, linkedItemId) {
+    //     const addingLink = action === 'add-link'
+    //     // update context state
+    //     let newPosts = [] as any
+    //     if (location === 'space-posts') newPosts = [...spacePosts]
+    //     if (location === 'user-posts') newPosts = [...userPosts]
+    //     if (location === 'post-page') newPosts = [{ ...postData }]
+    //     // update source item
+    //     if (findModelType(itemType) === 'post') {
+    //         let item = newPosts.find((p) => p.id === (parentItemId || itemData.id))
+    //         if (itemType === 'bead') item = item.Beads.find((p) => p.id === itemData.id)
+    //         if (itemType === 'card') item = item.CardSides.find((p) => p.id === itemData.id)
+    //         item.totalLinks += addingLink ? 1 : -1
+    //         item.accountLinks += addingLink ? 1 : -1
+    //     }
+    //     // update target item
+    //     if (linkedItemType === 'Post') {
+    //         let item = newPosts.find((p) => p.id === linkedItemId)
+    //         if (!item) {
+    //             newPosts.forEach((post) => {
+    //                 const bead = post.Beads && post.Beads.find((b) => b.id === linkedItemId)
+    //                 const card = post.CardSides && post.CardSides.find((c) => c.id === linkedItemId)
+    //                 if (bead) item = bead
+    //                 if (card) item = card
+    //             })
+    //         }
+    //         item.totalLinks += addingLink ? 1 : -1
+    //         item.accountLinks += addingLink ? 1 : -1
+    //     }
+    //     if (location === 'space-posts') setSpacePosts(newPosts)
+    //     if (location === 'user-posts') setUserPosts(newPosts)
+    //     if (location === 'post-page') setPostData(newPosts[0])
+    // }
+
+    // function addLink() {
+    //     setAddLinkLoading(true)
+    //     const data = {
+    //         sourceType: findModelType(itemType),
+    //         sourceId: itemData.id,
+    //         targetType: newLinkTargetType.toLowerCase(),
+    //         targetId: newLinkTargetId,
+    //         description: newLinkDescription,
+    //         spaceId: window.location.pathname.includes('/s/') ? spaceData.id : null,
+    //         accountHandle: accountData.handle,
+    //         accountName: accountData.name,
+    //     }
+    //     const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
+    //     axios
+    //         .post(`${config.apiURL}/add-link`, data, options)
+    //         .then((res) => {
+    //             console.log('add-link res: ', res.data)
+    //             const { target, link } = res.data
+    //             // update modal state
+    //             setNewLinkTargetId('')
+    //             setNewLinkDescription('')
+    //             setLinkData({
+    //                 ...linkData,
+    //                 [`Outgoing${newLinkTargetType}Links`]: [
+    //                     ...linkData[`Outgoing${newLinkTargetType}Links`],
+    //                     { ...link, Creator: accountData, [`Outgoing${newLinkTargetType}`]: target },
+    //                 ],
+    //             })
+    //             // update context state
+    //             updateContextState('add-link', newLinkTargetType, +newLinkTargetId)
+    //             setAddLinkLoading(false)
+    //         })
+    //         .catch((error) => {
+    //             console.log(error)
+    //             if (error.response && error.response.status === 404) {
+    //                 setTargetError(true)
+    //                 setAddLinkLoading(false)
+    //             }
+    //         })
+    // }
 
     // function removeLink(direction, type, linkId, itemId) {
     //     const options = { headers: { Authorization: `Bearer ${cookies.get('accessToken')}` } }
@@ -267,10 +329,9 @@ function LinkModal(props: {
         d3.select('#master-group').attr('transform', event.transform)
         // scale circle and text attributes
         const scale = event.transform.k
-        d3.selectAll('.node-circle').attr('stroke-width', 1 / scale)
         d3.selectAll('.node-text').attr('font-size', 10 / scale)
         d3.selectAll('.node-text').each((d) =>
-            d3.select(`#node-text-${d.data.item.id}`).text(findNodeText(d, scale))
+            d3.select(`#node-text-${d.data.item.uuid}`).text(findNodeText(d, scale))
         )
     })
 
@@ -307,38 +368,40 @@ function LinkModal(props: {
         // set up zoom
         svg.call(zoom).on('dblclick.zoom', null)
         svg.call(zoom.transform, d3.zoomIdentity.translate(canvasSize / 2, canvasSize / 2))
-        svg.on('click', resetPosition)
+        svg.on('click', () => {
+            resetPosition()
+            setTimeout(() => {
+                transitioning.current = false
+            }, duration + 100)
+        })
     }
 
-    // function findDomain() {
-    //     let dMin = 0
-    //     let dMax
-    //     if (sortBy === 'Date Created') {
-    //         dMin = d3.min(postMapData.posts.map((post) => Date.parse(post.createdAt)))
-    //         dMax = d3.max(postMapData.posts.map((post) => Date.parse(post.createdAt)))
-    //     } else if (sortBy === 'Recent Activity') {
-    //         dMin = d3.min(postMapData.posts.map((post) => Date.parse(post.lastActivity)))
-    //         dMax = d3.max(postMapData.posts.map((post) => Date.parse(post.lastActivity)))
-    //     } else dMax = d3.max(postMapData.posts.map((child) => child[`total${sortBy}`]))
-    //     return sortOrder === 'Descending' ? [dMin, dMax] : [dMax, dMin]
-    // }
+    function findDomain() {
+        // calculate node radius domain
+        let dMin = 0
+        let dMax
+        if (sizeBy === 'Date Created') {
+            dMin = d3.min(nodes.current.map((node) => Date.parse(node.data.item.createdAt)))
+            dMax = d3.max(nodes.current.map((node) => Date.parse(node.data.item.createdAt)))
+        } else if (sizeBy === 'Recent Activity') {
+            dMin = d3.min(nodes.current.map((node) => Date.parse(node.data.item.updatedAt)))
+            dMax = d3.max(nodes.current.map((node) => Date.parse(node.data.item.updatedAt)))
+        } else {
+            dMax = d3.max(nodes.current.map((node) => node.data.item[`total${sizeBy}`]))
+        }
+        domain.current = [dMin, dMax]
+    }
 
     function findNodeRadius(d) {
+        let radius
+        if (sizeBy === 'Date Created') radius = Date.parse(d.data.item.createdAt)
+        else if (sizeBy === 'Recent Activity') radius = Date.parse(d.data.item.updatedAt)
+        else radius = d.data.item[`total${sizeBy}`]
         const radiusScale = d3
             .scaleLinear()
-            .domain([0, 5]) // data values spread
-            .range([10, 30]) // radius size spread
-        const radius = d.data.item.totalLikes
-        // let radius
-        // if (sortBy === 'Date Created') radius = Date.parse(d.createdAt)
-        // else if (sortBy === 'Recent Activity') radius = Date.parse(d.lastActivity)
-        // else radius = d[`total${sortBy}`]
+            .domain(domain.current) // data values spread
+            .range([10, 25]) // radius size spread
         return radiusScale(radius)
-    }
-
-    function linkId(d) {
-        // use target link id (route node doesn't have source)
-        return d.target.data.Link.id
     }
 
     function outgoingLink(d) {
@@ -346,9 +409,10 @@ function LinkModal(props: {
     }
 
     function findLinkColor(d) {
-        return outgoingLink(d) ? 'blue' : 'red'
+        return outgoingLink(d) ? colors.linkBlue : colors.linkRed
     }
 
+    // todo: use angles here combined with seperation function to improve radial spread
     function findNodeTransform(d) {
         return `rotate(${(d.x * 180) / Math.PI - 90}),translate(${d.y}, 0)`
     }
@@ -373,10 +437,19 @@ function LinkModal(props: {
         return `M${points[0]}L${points[1]}`
     }
 
+    function findNodeFill(d) {
+        const { modelType } = d.data.item
+        if (modelType === 'post') return colors.aqua
+        if (modelType === 'comment') return colors.purple
+        if (modelType === 'user') return colors.orange
+        if (modelType === 'space') return colors.green
+        return '#aaa'
+    }
+
     function findNodeText(d, scale) {
         // temporary solution until GBG posts title field used instead of topic
-        const { type, topic, title, text } = d.data.item
-        if (d.data.item.modelType === 'post') {
+        const { modelType, type, topic, title, text } = d.data.item
+        if (modelType === 'post') {
             const plainText =
                 type === 'glass-bead-game'
                     ? topic || getDraftPlainText(text || '')
@@ -389,17 +462,76 @@ function LinkModal(props: {
         return ''
     }
 
-    function createLinks(links) {
+    function circleMouseOver(e, d) {
+        // highlight selected circle
+        d3.select(`#node-background-${d.data.item.uuid}`)
+            .transition()
+            .duration(duration / 4)
+            .attr('fill', colors.cpBlue)
+            .attr('r', findNodeRadius(d) + 6)
+        // highlight other circles
+        d3.selectAll(`.node-background-${d.data.item.id}`)
+            .filter((n) => n.data.item.uuid !== d.data.item.uuid)
+            .transition()
+            .duration(duration / 4)
+            .attr('fill', colors.cpPurple)
+            .attr('r', findNodeRadius(d) + 6)
+    }
+
+    function circleMouseOut(e, d) {
+        // fade out all highlighted circles
+        d3.selectAll(`.node-background-${d.data.item.id}`)
+            .transition()
+            .duration(duration / 4)
+            .attr('fill', '#aaa')
+            .attr('r', findNodeRadius(d) + 2)
+    }
+
+    function circleClick(e, d) {
+        if (!transitioning.current) {
+            transitioning.current = true
+            if (!d.parent) resetPosition()
+            else {
+                setClickedSpaceUUID(d.data.item.uuid)
+                getLinks(d.data.item.id, d.data.item.modelType)
+            }
+        }
+    }
+
+    function findNodeById(tree: any, id: number) {
+        // recursive function, traverses the node tree to find a space using its space id
+        if (tree.data.item.id === id) return tree
+        if (tree.children) {
+            for (let i = 0; i < tree.children.length; i += 1) {
+                const match = findNodeById(tree.children[i], id)
+                if (match) return match
+            }
+        }
+        return null
+    }
+
+    function recursivelyAddUUIDS(oldNode, newNode) {
+        newNode.data.item.uuid = oldNode.data.item.uuid
+        matchedNodeIds.current.push(oldNode.data.item.uuid)
+        if (newNode.children && oldNode.children) {
+            newNode.children.forEach((child) => {
+                const match = oldNode.children.find((c) => c.data.item.id === child.data.item.id)
+                if (match) recursivelyAddUUIDS(match, child)
+            })
+        }
+    }
+
+    function createLinks() {
         d3.select(`#links`)
             .selectAll('.link')
-            .data(links, (d) => linkId(d))
+            .data(links.current, (d) => d.uuid)
             .join(
                 (enter) => {
                     // create group
                     const group = enter
                         .append('g')
-                        .attr('id', (d) => `link-${linkId(d)}`)
-                        .attr('class', (d) => `link`)
+                        .attr('id', (d) => `link-${d.uuid}`)
+                        .attr('class', 'link')
                         .attr('opacity', 0)
                         .call((node) => {
                             node.transition('link-enter')
@@ -410,10 +542,10 @@ function LinkModal(props: {
                     // create path
                     group
                         .append('path')
-                        .classed('link-path', true)
-                        .attr('id', (d) => `link-path-${linkId(d)}`)
-                        .style('stroke', findLinkColor)
+                        .attr('id', (d) => `link-path-${d.uuid}`)
+                        .attr('class', 'link-path')
                         .attr('fill', 'none')
+                        .attr('stroke', findLinkColor)
                         // .attr('stroke-width', (d) => {
                         //     console.log('link d: ', d)
                         //     return d.source.height + 1
@@ -422,27 +554,24 @@ function LinkModal(props: {
                     // create text
                     group
                         .append('text')
-                        .classed('link-text', true)
                         .attr('dy', -5)
                         .append('textPath')
-                        .classed('textPath', true)
                         .text((d) => d.target.data.Link.description)
                         .attr('font-size', 10)
                         .attr('text-anchor', 'middle')
                         .attr('startOffset', '50%')
-                        .attr('href', (d) => `#link-path-${linkId(d)}`)
+                        .attr('href', (d) => `#link-path-${d.uuid}`)
                     // creat arrow
                     group
                         .append('text')
-                        .classed('link-arrow', true)
+                        .attr('class', 'link-arrow')
                         .attr('dy', 3.4)
                         .append('textPath')
-                        .classed('textPath', true)
                         .text('▶')
                         .attr('font-size', 10)
                         .attr('text-anchor', 'middle')
                         .attr('startOffset', '50%')
-                        .attr('href', (d) => `#link-path-${linkId(d)}`)
+                        .attr('href', (d) => `#link-path-${d.uuid}`)
                         .style('fill', findLinkColor)
                     return group
                 },
@@ -473,43 +602,47 @@ function LinkModal(props: {
             )
     }
 
-    function createNodes(nodes) {
+    function createNodes() {
         d3.select(`#nodes`)
             .selectAll('.node')
-            .data(nodes, (d) => d.data.item.id)
+            .data(nodes.current, (d) => d.data.item.uuid)
             .join(
                 (enter) => {
                     // create group
                     const group = enter
                         .append('g')
-                        .attr('id', (d) => `node-${d.data.item.id}`)
-                        .attr('class', (d) => `node`)
+                        .attr('id', (d) => `node-${d.data.item.uuid}`)
+                        .attr('class', 'node')
                         .attr('opacity', 0)
                         .call((node) => {
                             node.transition('node-enter').duration(duration).attr('opacity', 1)
                         })
+                    // create background
+                    group
+                        .append('circle')
+                        .attr('id', (d) => `node-background-${d.data.item.uuid}`)
+                        .attr('class', (d) => `node-background node-background-${d.data.item.id}`)
+                        .attr('transform', findNodeTransform)
+                        .attr('r', (d) => findNodeRadius(d) + 2)
+                        .attr('fill', '#aaa')
+                        .attr('cursor', 'pointer')
+                        .on('mouseover', circleMouseOver)
+                        .on('mouseout', circleMouseOut)
+                        .on('click', circleClick)
+                        .style('cursor', 'pointer')
                     // create circle
                     group
                         .append('circle')
                         .classed('node-circle', true)
-                        .attr('id', (d) => `node-circle-${d.data.item.id}`)
+                        .attr('id', (d) => `node-circle-${d.data.item.uuid}`)
                         .attr('transform', findNodeTransform)
                         .attr('r', findNodeRadius)
-                        .attr('fill', (d) =>
-                            d.data.item.modelType === 'post' ? '#00b1a9' : '#826cff'
-                        )
-                        .attr('stroke-width', 1)
-                        .attr('stroke', 'black')
-                        .attr('cursor', 'pointer')
-                        .on('click', (e, circle) => {
-                            if (!circle.parent) resetPosition()
-                            else getLinks(circle.data.item.id, circle.data.item.modelType)
-                        })
-                        .style('cursor', 'pointer')
+                        .attr('fill', findNodeFill)
+                        .attr('pointer-events', 'none')
                     // create text
                     group
                         .append('text')
-                        .attr('id', (d) => `node-text-${d.data.item.id}`)
+                        .attr('id', (d) => `node-text-${d.data.item.uuid}`)
                         .classed('node-text', true)
                         .text((d) => findNodeText(d, 1))
                         .attr('font-size', 10)
@@ -520,6 +653,16 @@ function LinkModal(props: {
                     return group
                 },
                 (update) => {
+                    // update background
+                    update
+                        .select('.node-background')
+                        .on('mouseover', circleMouseOver)
+                        .on('mouseout', circleMouseOut)
+                        .on('click', circleClick)
+                        .transition('node-background-update')
+                        .duration(duration)
+                        .attr('r', (d) => findNodeRadius(d) + 2)
+                        .attr('transform', findNodeTransform)
                     // update circle
                     update
                         .select('.node-circle')
@@ -551,8 +694,8 @@ function LinkModal(props: {
     }, [])
 
     useEffect(() => {
-        if (linkDataNew) {
-            const data = d3.hierarchy(linkDataNew, (d) => d.item.children)
+        if (linkData) {
+            const data = d3.hierarchy(linkData, (d) => d.item.children)
             let radius
             if (data.height === 1) radius = circleSize / 6
             if (data.height === 2) radius = circleSize / 3
@@ -566,15 +709,97 @@ function LinkModal(props: {
                 // .separation(() => 1)
                 // .separation((a, b) => ((a.parent === b.parent ? 1 : 2) / a.depth) * 4)
                 // .separation((a, b) => (a.parent === b.parent ? 1 : 3) / (a.depth * 4))
-                .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth)
+                .separation((a, b) => {
+                    // return 1
+                    return (a.parent === b.parent ? 1 : 2) / a.depth
+                })
 
             const treeData = tree(data)
-            const links = treeData.links()
-            const nodes = treeData.descendants()
-            createLinks(links)
-            createNodes(nodes)
+            const newLinks = treeData.links()
+            const newNodes = treeData.descendants()
+            // todo: clean up and match links using uuids like nodes
+            // add link ids
+            newLinks.forEach((link) => {
+                link.id = link.target.data.Link.id
+                link.uuid = link.target.data.Link.uuid
+            })
+            // update link uuids
+            if (links.current) {
+                const matchedLinkIds = [] as number[]
+                newLinks.forEach((link) => {
+                    const match = links.current.find((l) => l.id === link.id)
+                    const alreadyMatched = matchedLinkIds.find((id) => id === link.id)
+                    if (match && !alreadyMatched) {
+                        matchedLinkIds.push(link.id)
+                        link.uuid = match.uuid
+                    }
+                })
+            }
+            // update node uuids
+            const oldNode = nodes.current && nodes.current[0]
+            if (oldNode) {
+                const newNode = newNodes[0]
+                matchedNodeIds.current = []
+                // if tree updates without navigation
+                if (oldNode.data.item.id === newNode.data.item.id) {
+                    recursivelyAddUUIDS(oldNode, newNode)
+                } else {
+                    // if navigating to new node use uuid to ensure the correct node is chosen, otherwise just the node id
+                    const id = clickedSpaceUUID || newNode.data.item.id
+                    const idType = clickedSpaceUUID ? 'uuid' : 'id'
+                    const oldChild = nodes.current.find((s) => s.data.item[idType] === id)
+                    if (oldChild) recursivelyAddUUIDS(oldChild, newNode)
+                    else {
+                        // if new space neither old parent or child, search for matching spaces by id
+                        const matchingChild = findNodeById(newNode, oldNode.data.item.id)
+                        if (matchingChild) recursivelyAddUUIDS(oldNode, matchingChild)
+                    }
+                }
+                // update other matches outside of old node tree
+                newNodes.forEach((node) => {
+                    const alreadyMatched = matchedNodeIds.current.find(
+                        (uuid) => uuid === node.data.item.uuid
+                    )
+                    if (!alreadyMatched) {
+                        const match = nodes.current
+                            .filter(
+                                (n) =>
+                                    !matchedNodeIds.current.find(
+                                        (uuid) => uuid === n.data.item.uuid
+                                    )
+                            )
+                            .find((n) => n.data.item.id === node.data.item.id)
+
+                        if (match) {
+                            matchedNodeIds.current.push(match.data.item.uuid)
+                            node.data.item.uuid = match.data.item.uuid
+                        }
+                    }
+                })
+            }
+            links.current = newLinks
+            nodes.current = newNodes
+            findDomain()
+            createLinks()
+            createNodes()
+            // mark transition complete after duration
+            setTimeout(() => {
+                transitioning.current = false
+            }, duration + 100)
         }
-    }, [linkDataNew])
+    }, [linkData])
+
+    useEffect(() => {
+        if (nodes.current) {
+            findDomain()
+            createLinks()
+            createNodes()
+            // mark transition complete after duration
+            setTimeout(() => {
+                transitioning.current = false
+            }, duration + 100)
+        }
+    }, [sizeBy])
 
     return (
         <Modal close={close} centerX style={{ minWidth: 400 }}>
@@ -585,7 +810,8 @@ function LinkModal(props: {
                 <h1>{headerText}</h1>
                 <Row>
                     <Column centerX style={{ width: 700, marginRight: 50 }}>
-                        {linkDataNew && <PostCard post={linkDataNew.item} location='link-modal' />}
+                        {/* {linkData && <PostCard post={linkData.item} location='link-modal' />} */}
+                        {renderSourceItem()}
 
                         {/* <ArrowDownIcon
                             style={{
@@ -603,7 +829,7 @@ function LinkModal(props: {
                                         <DropDownMenu
                                             title=''
                                             orientation='horizontal'
-                                            options={['Post', 'Comment']} // 'User', 'Space'
+                                            options={['Post', 'Comment', 'User', 'Space']}
                                             selectedOption={newLinkTargetType}
                                             setSelectedOption={(option) => {
                                                 setTargetError(false)
@@ -612,6 +838,7 @@ function LinkModal(props: {
                                             }}
                                         />
                                     </Row>
+                                    {/* <Column> */}
                                     <Input
                                         type='text'
                                         prefix={
@@ -627,10 +854,21 @@ function LinkModal(props: {
                                         }}
                                         style={{ marginRight: 20 }}
                                     />
+                                    {/* <Column>
+                                            {linkedItemOptions.map((option) => (
+                                                <ImageTitle
+                                                    type='user'
+                                                    imagePath={option.flagImagePath}
+                                                    title={`${option.name} (${option.handle})`}
+                                                    style={{ marginRight: 5 }}
+                                                />
+                                            ))}
+                                        </Column>
+                                    </Column> */}
                                     <Button
                                         text='Add link'
                                         color='blue'
-                                        onClick={addLink}
+                                        onClick={() => null}
                                         disabled={
                                             addLinkLoading ||
                                             !newLinkTargetId ||
@@ -700,7 +938,7 @@ function LinkModal(props: {
                             />
                             <DropDown
                                 title='Size by'
-                                options={['Likes', 'Links']}
+                                options={['Likes', 'Links', 'Date Created', 'Recent Activity']}
                                 selectedOption={sizeBy}
                                 setSelectedOption={(option) => setSizeBy(option)}
                             />

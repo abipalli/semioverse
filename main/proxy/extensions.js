@@ -5,6 +5,19 @@ function condTransformExtension(card, source, target, mapping, rules) {
     throw new Error("Argument is not an instance of Card");
   }
 
+  card.transforms = new Set();
+
+  card.transform = async () => {
+    if (!(await this.checkRule(this, "transform"))) {
+      throw new Error(`Call to transform is not allowed`);
+    }
+    const transformedCards = [];
+    for (const transform of this.transforms) {
+      transformedCards.push(transform.get("applyTo")(this));
+    }
+    return transformedCards;
+  };
+
   // Add new properties to card
   card.set("source", source);
 
@@ -40,6 +53,19 @@ function condDissAssociatorExtension(card, source, rules) {
   if (!(card instanceof Card)) {
     throw new Error("Argument is not an instance of Card");
   }
+
+  card.transforms = new Set();
+
+  card.transform = async () => {
+    if (!(await this.checkRule(this, "transform"))) {
+      throw new Error(`Call to transform is not allowed`);
+    }
+    const transformedCards = [];
+    for (const transform of this.transforms) {
+      transformedCards.push(transform.get("applyTo")(this));
+    }
+    return transformedCards;
+  };
 
   // Add new properties to card
   card.set("source", source);

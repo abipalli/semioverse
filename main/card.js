@@ -45,8 +45,11 @@ export class Card extends Map {
       await this.thread(...thread);
     }
   }
+
   async *navigate(pathsOrGenerator) {
-    // Handles both an iterable or an asynchronous generator
+    if (!(await this.checkRule(this, "navigate", pathsOrGenerator))) {
+      throw new Error(`Call to navigate is not allowed`);
+    }
     let currentCard = this;
     let previousCard = null;
 
@@ -58,6 +61,7 @@ export class Card extends Map {
     for await (let { value: path, done } of pathsIterator) {
       if (!done) {
         if (path === "metaphor-dive") {
+          // as a reserved keyword we must make sure that it cant be used as a key elsewhere
           const peek = pathsIterator.next();
           if (!peek.done && currentCard.has(peek.value)) {
             const nextPath = peek.value;
@@ -72,23 +76,30 @@ export class Card extends Map {
           previousCard = currentCard;
           currentCard = currentCard.get(path);
         } else {
-          return;
+          return; // would be nice to indicate where the failure occured
         }
-
         if (previousCard) {
           let positions = currentCard.positions;
           if (!positions) {
             positions = new Set();
             currentCard.positions = positions;
           }
-          positions.add(previousCard);
+          positions.add(
+            Object.freeze({ previousCard: previousCard, pathTaken: path })
+          );
+
+          // Cleaning up the positions set
+          for (let pos of positions) {
+            if (pos.previousCard.get(pos.pathTaken) !== currentCard) {
+              positions.delete(pos);
+            }
+          }
         }
 
         yield currentCard;
       }
     }
   }
-
   async *replace(substitute, destinationkey, ...routes) {
     for await (const route of routes) {
       let iterator = this.navigate(route); // we should ensure that route is an iterable or an async generator
