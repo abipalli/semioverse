@@ -48,7 +48,7 @@ The Card class includes methods such as thread, weave, navigate, and substitute,
 
 **substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution. The significance of this and its parallels to the lambda calculus will be explored in later sections.
 
-**snapshot**: 
+**snapshot**:
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
 
@@ -135,6 +135,10 @@ The code in this repository is by no means the only implimentation of these conc
 
 https://docs.google.com/document/d/1iy59rRTpHwqwyyHj7ZSTxyf4df6_yI8MwjgS1tA7zj8/edit
 
-# Merge to Earn
+# Contributing to this repo!
+
+**Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting computational magic!**
+
+## Merge to Earn
 
 We will be setting up [Merge to Earn](https://mte.slice.so/) on this repository.
