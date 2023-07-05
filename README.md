@@ -1,20 +1,20 @@
 # Play!
 
-**Play!** is a new media, it is an interfacing interface and distributed semiosis.
+**Play!** is a new media, it is an **interfacing interface**.
 
 **Music** has at its disposal duration of time.
 
 **Painting** can present to the viewer the whole content of its message at one moment.
 
-The **movie** attempted a synthesis of **music** and **painting** but lacked in *mutability* and *extensiveness*, *receptivity* and *interactivity*.
+**Movie** attempted a synthesis of **music** and **painting** but lacked in *mutability* and *extensiveness*, *receptivity* and *interactivity*.
 
 Indeed for what the **movie** itself lacked in *receptivity* and *mutability* it demanded of the viewer, and the injunction of this medium can be summarized as ***Watch!***
 
-The **interface** partially inverted the **movie-viewer** relation adding *mutability, extensiveness, receptivity* and *interactivity* to the thing in view.
+**Interface** partially inverted the **movie-viewer** relation adding *mutability, extensiveness, receptivity* and *interactivity* to the thing in view.
 
-The **social-interface** brought *sociality* to the *mutability, extensiveness, receptivity,* and *interactivity* of the **interface** in ways defined by the affordances of the particular **interface**.
+**Social-interface** brought *sociality* to the *mutability, extensiveness, receptivity,* and *interactivity* of the **interface** in ways defined by the affordances of the particular **interface**.
 
-The **interfacing interface** brings *mutability*, *extensiveness*, *interactivity*, *receptivity* to the architecture/frame of **interface** itself through **interface** itself. The injunction of this medium is ***Play!***
+**I****nterfacing interface** brings *mutability*, *extensiveness*, *interactivity*, *receptivity* to the architecture/frame of **interface** itself through **interface** itself. The injunction of this medium is ***Play!***
 
 ---
 
