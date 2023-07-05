@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import Card from "./proxycard.js";
+import Card from "./card.js";
 
 export class ElementMap extends Map {
   constructor() {

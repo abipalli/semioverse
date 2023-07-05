@@ -1,176 +1,6 @@
-const isEmpty = function (arr) {
-  return arr.length == 0;
-};
+import Card from "./card.js";
 
-const notEmpty = function (arr) {
-  return arr.length > 0;
-};
-
-function compareBids(a, b) {
-  return a.priority - b.priority;
-}
-
-class EventDictionary extends Map {
-  constructor(...args) {
-    super(args);
-  }
-
-  addEventReference(eventType, narrativeRef) {
-    if (!this.has(eventType)) {
-      this.set(eventType, []);
-    }
-    this.get(eventType).push(narrativeRef);
-  }
-
-  getNarrativesForEvent(eventType) {
-    return this.get(eventType) || [];
-  }
-
-  removeEventReference(eventType, narrativeRef) {
-    if (this.has(eventType)) {
-      const refs = this.get(eventType);
-      const index = refs.indexOf(narrativeRef);
-      if (index !== -1) {
-        refs.splice(index, 1);
-        if (refs.length === 0) {
-          this.delete(eventType);
-        }
-      }
-    }
-  }
-
-  clearEventReferences() {
-    this.clear();
-  }
-}
-
-export class Card extends Map {
-  constructor(name, ...args) {
-    super(...args);
-    this.name = name;
-    this.positions = new Set();
-    this.transforms = new Set();
-    this.expressions = new Set();
-  }
-
-  async thread(...paths) {
-    let map = this;
-    let initmap = map;
-    for await (const path of paths) {
-      if (map instanceof Map || map instanceof Card) {
-        if (Array.isArray(path)) {
-          const [actualPath, rule] = path;
-          if (typeof rule === "function" && !rule()) {
-            break;
-          }
-          if (!map.has(actualPath)) {
-            map.set(actualPath, new Card());
-          }
-          map = map.get(actualPath);
-        } else {
-          if (!map.has(path)) {
-            map.set(path, new Card());
-          }
-          map = map.get(path);
-        }
-      } else {
-        console.log("map is not instanceof Map or Card");
-        break;
-      }
-    }
-    return initmap;
-  }
-
-  async weave(...threads) {
-    // It takes in an array of arrays, where each array represents a thread of paths to be weaved.
-    for (const thread of threads) {
-      await this.thread(...thread);
-    }
-  }
-  async *navigate(pathsOrGenerator) {
-    // Handles both an iterable or an asynchronous generator
-    let currentCard = this;
-    let previousCard = null;
-
-    const pathsIterator =
-      Symbol.iterator in pathsOrGenerator
-        ? pathsOrGenerator[Symbol.iterator]()
-        : pathsOrGenerator;
-
-    for await (let { value: path, done } of pathsIterator) {
-      if (!done) {
-        if (path === "metaphor-dive") {
-          const peek = pathsIterator.next();
-          if (!peek.done && currentCard.has(peek.value)) {
-            const nextPath = peek.value;
-            const nextCard = currentCard.get(nextPath);
-            if (nextCard instanceof Map || nextCard instanceof Card) {
-              previousCard = currentCard;
-              currentCard = nextCard;
-              path = nextPath;
-            }
-          }
-        } else if (currentCard.has(path)) {
-          previousCard = currentCard;
-          currentCard = currentCard.get(path);
-        } else {
-          return;
-        }
-
-        if (previousCard) {
-          let positions = currentCard.positions;
-          if (!positions) {
-            positions = new Set();
-            currentCard.positions = positions;
-          }
-          positions.add(previousCard);
-        }
-
-        yield currentCard;
-      }
-    }
-  }
-
-  async *replace(substitute, destinationkey, ...routes) {
-    for await (const route of routes) {
-      let iterator = this.navigate(route); // we should ensure that route is an iterable or an async generator
-      let result = await iterator.next();
-      while (!result.done) {
-        let nextResult = await iterator.next();
-        if (nextResult.done && result.value.has(destinationkey)) {
-          result.value.set(destinationkey, new Card());
-          result.value.get(destinationkey).set("value", substitute);
-        } else if (nextResult.done) {
-          continue;
-        }
-        result = nextResult;
-      }
-    }
-  }
-
-  // Apply all associated transforms to this card and return the transformed cards
-  transform() {
-    //transform(): This method applies all the Transformations that have been linked to the Card. For each Transformation in the Card's "transforms" Set, it invokes the applyTo method of the Transformation, passing in the Card itself. This effectively transforms the Card according to each Transformation. Each transformation returns a new Card, and all the resulting transformed Cards are collected into an array.
-    const transformedCards = [];
-    for (const transform of this.transforms) {
-      transformedCards.push(transform.get("applyTo")(this));
-    }
-    return transformedCards;
-  }
-
-  async *pathsGenerator(interpreter) {
-    // This method is a generator that interprets the expressions on the current card based on the provided interpreter function.
-    while (true) {
-      const interpretation = await interpreter(this);
-      if (interpretation === null || interpretation === undefined) {
-        break;
-      }
-      yield interpretation;
-    }
-  }
-}
-
-class Game extends Card {
+export default class Game extends Card {
   constructor(...args) {
     super(args);
     this._messages = [];
@@ -272,6 +102,11 @@ class Game extends Card {
   async addNarrative(name, prio, fun) {
     var bound = fun.bind({
       lastEvent: () => this.lastEvent,
+      thread: async (...paths) => this.thread(...paths),
+      weave: async (...threads) => this.weave(...threads),
+      navigate: async (pathsOrGenerator) => this.navigate(pathsOrGenerator), // THIS IS A GENERATOR
+      replace: async (substitute, destinationkey, ...routes) =>
+        this.replace(substitute, destinationkey, ...routes), // THIS IS A GENERATOR
       express: async (...threads) => this.express(...threads),
       // this allows narratives to access the story, the expressions, and express function, thread, weave
       expressions: new Set(),
@@ -506,5 +341,3 @@ class Game extends Card {
 
   // It would be useful to have an extractEventTypesFromNarrative(narrative)
 }
-
-export default Game;

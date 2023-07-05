@@ -1,7 +1,7 @@
 import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import Play from "./play.js"; // Make sure you've the correct path
+import Play from "../old/play.js"; // Make sure you've the correct path
 
 const app = express();
 const httpServer = createServer(app);

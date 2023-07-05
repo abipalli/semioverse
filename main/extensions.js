@@ -1,4 +1,4 @@
-import Card from "./proxycard.js";
+import Card from "./card.js";
 
 function condTransformExtension(card, source, target, mapping, rules) {
   if (!(card instanceof Card)) {

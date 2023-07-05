@@ -6,7 +6,7 @@
 
 **Painting** can present to the viewer the whole content of its message at one moment.
 
-The **movie** attempted this synthesis of **music** and **painting** but lacked in *mutability* and *extensiveness*, *receptivity* and *interactivity*.
+The **movie** attempted a synthesis of **music** and **painting** but lacked in *mutability* and *extensiveness*, *receptivity* and *interactivity*.
 
 Indeed for what the **movie** itself lacked in *receptivity* and *mutability* it demanded of the viewer, and the injunction of this medium can be summarized as ***Watch!***
 
@@ -46,7 +46,9 @@ The Card class includes methods such as thread, weave, navigate, and substitute,
 
 **navigate**: The navigate method is a generator that iterates through paths and keeps track of the previous card and stores it in the positions set, effectively allowing for bidirectional navigation. It yields a new context each time it steps through the path.
 
-**substitute**: The substitute method is a signifier for substitution or transformation. It's an act of exchange, replacing one signifier with another within the structure of the Card. It functions by navigating along defined routes and performing a substitution. The significance of this and its parallels to the lambda calculus will be explored in later sections.
+**substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution. The significance of this and its parallels to the lambda calculus will be explored in later sections.
+
+**snapshot**: 
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
 
@@ -69,8 +71,6 @@ Because the Card class extends the Map class allowing for keys and values to be 
 
 Using Card instances as keys, signifying metaphor, adds a degree of conceptual abstraction that makes this system incredibly powerful for bridging gaps between disparate systems or concepts.
 
-This design can accommodate an enormous range of applications and use-cases. For example, it could be used to model and navigate complex conceptual systems, such as a web of scientific knowledge, dynamical social networks, or evolving ecosystems. It could also be used to create intricate game worlds, or to build a language parsing system that understands context and metaphor.
-
 ## Metaphor-dive during Navigation
 
 When the navigation method encounters the "metaphor-dive" token, it performs 'jump' from one concept to another related concept - not by a direct link, but via an intermediate implicitly metaphorical relationship
@@ -79,13 +79,19 @@ When the navigation method encounters the "metaphor-dive" token, it traverses in
 
 This mirrors the way human cognition often works: we constantly make connections between seemingly unrelated concepts based on their shared properties or associated ideas. A classic example is how the word 'network' has been borrowed from its original physical sense (a net-like structure) to describe social and computer systems.
 
-With metaphor-dive, the Card graph could potentially support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It could enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph could evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
+With metaphor-dive, the Card graph can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
 
 # Cyclic Tautologies
 
 Reason as Testing Laws, cyclic tautologies in the card-graph upon interpretation through rules of inference.
 
+# Beyond the Literary Form
+
+Cards going byeond our current literary form. Speaking in card graphs, icons as networks made sensual. Metaphoric expression, poetics.
+
 # Install
+
+[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from networking. [!]
 
 In the future distributed networking will occur in the browser with no need for installation. Currently however, using hyperswarm requires us to run locally using node.
 
@@ -111,17 +117,17 @@ Open the browser and go to http://127.0.0.1:8080
 
     Graph-based Computation and Data Flow Programming: The Card class can be seen as a basic building block for a graph-based computation system. Complex operations can be broken down into simpler operations and represented as a graph of Card instances. The navigate function can be used to traverse this graph, essentially executing the operation. The substitute function can perform substitutions in the graph, acting like computation in the data flow. This is akin to data flow programming where the focus is on the movement and transformation of data within the system.
 
-    Visual Programming Environments: With its ability to model complex operation-operand structures as graphs, the Card class could be used as the basis for a visual programming environment. Each Card could be represented visually as a node, with threads between nodes representing the relationships between them. This could make programming more accessible and intuitive, especially for people who are new to coding.
+    Visual Programming Environments: With its ability to model complex operation-operand structures as graphs, the Card class can be used as the basis for a visual programming environment. Each Card can be represented visually as a node, with threads between nodes representing the relationships between them. This can make programming more accessible and intuitive, especially for people who are new to coding.
 
-    Metaphorical and Semantic Computing: The ability of the Card class to use other Card instances as keys opens up possibilities for metaphorical and semantic computing. This could allow for the creation of systems that can understand and reason with metaphors, opening up new possibilities in fields like natural language processing and intelligence.
+    Metaphorical and Semantic Computing: The ability of the Card class to use other Card instances as keys opens up possibilities for metaphorical and semantic computing. This can allow for the creation of systems that can understand and reason with metaphors, opening up new possibilities in fields like natural language processing and intelligence.
 
-    Interactive Storytelling and Game Design: The Card class could be used to create interactive narratives or game worlds. Each Card could represent a scene, character, or object, with the relationships between cards defining the structure of the narrative or game world. This could allow for highly interactive and non-linear storytelling experiences.
+    Interactive Storytelling and Game Design: The Card class can be used to create interactive narratives or game worlds. Each Card can represent a scene, character, or object, with the relationships between cards defining the structure of the narrative or game world. This can allow for highly interactive and non-linear storytelling experiences.
 
     Modular and Expandable Software Design: With its thread, weave, navigate, and substitute methods, the Card class provides a strong foundation for modular and expandable software design. New functionalities can be added by simply adding new Card instances and threading them appropriately.
 
-    Systems Simulation: The multi-dimensional nature of the Card system provides a powerful structure for system simulations. It could be utilized to represent a range of systems from simple hierarchical structures to more complex nested systems. For example, in an ecological model, each Card could represent different ecological components—organisms, populations, communities, and so on—with their interconnectedness represented as threads between the cards.
+    Systems Simulation: The multi-dimensional nature of the Card system provides a powerful structure for system simulations. It can be utilized to represent a range of systems from simple hierarchical structures to more complex nested systems. For example, in an ecological model, each Card can represent different ecological components—organisms, populations, communities, and so on—with their interconnectedness represented as threads between the cards.
 
-    Modeling and Simulating Neural Networks: With the Card structure, you could potentially model a neural network, where each Card could represent a neuron, and the links between them could represent the synapses. The substitute function could be used to adjust the weights of these synapses at run time.
+    Modeling and Simulating Neural Networks: With the Card structure, you can potentially model a neural network, where each Card can represent a neuron, and the links between them can represent the synapses. The substitute function can be used to adjust the weights of these synapses at run time.
 
 # Rel! (Generative Relational Runtime)
 
