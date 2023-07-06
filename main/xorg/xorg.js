@@ -7,7 +7,7 @@ const move = new Card("move");
 
 const scenes = new Card("scenes");
 const roles = new Card("roles");
-const moves = new Card("Moves");
+const moves = new Card("moves");
 
 const actual = new Card("actual");
 const potential = new Card("potential");

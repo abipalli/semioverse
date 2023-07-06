@@ -16,6 +16,8 @@ Indeed for what the **movie** itself lacked in *receptivity* and *mutability* it
 
 **Interfacing interface** brings *mutability*, *extensiveness*, *interactivity*, *receptivity* to the architecture/frame of **interface** itself through **interface** itself. The injunction of this medium is ***Play!***
 
+(Add note on a language as interfacing interfacing)
+
 ---
 
 **[Play! (telegram)](https://t.me/semioverse)**
@@ -36,19 +38,48 @@ With this architecture, semiotic interaction is not only happening within each g
 
 # Cards
 
-The Card class creates a multi-dimensional, non-linear, interconnected network of nodes where every node (Card) itself can contain other nodes (Cards). This creates an intricate web of relationships that are defined by both the keys and values of each Card. The Card class extends the Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type.
+The Card class creates a non-linear graph of nodes where every node (Card) itself can contain other nodes (Cards). This creates an intricate web of relationships that are defined by both the keys and values of each Card. The Card class extends the Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type.
 
-The Card class includes methods such as thread, weave, navigate, and substitute, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card network.
+The Card class includes methods such as thread, weave, navigate, and substitute, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
 
-**thread**: The thread method works by creating a chain of nested Cards within the current Card based on the provided paths. Each path represents a sequence of keys or Card names to be followed or created if not existent.
+**Constructor** : It accepts four parameters `name`, `value`, `ruleEngine`, and `...args`. The `ruleEngine` is an optional async function that defaults to a function returning `true`.
+
+`name` and `value` are properties of the Card object, while `positions` is a Set object for storing references to the positions of this Card in other Cards. Expressions stores expressions about this Card. `ruleEngine` is a mechanism to verify each action made on the Card object.
+
+```javascript
+const player = new Card("scenes")
+const scenes = new Card("scenes");
+const roles = new Card("roles");
+const moves = new Card("moves");
+```
+
+**thread**: The thread method adds each input path as a key within the current Card and gets the value of that key, traversing the graph to the next Card if it exists (creating a new Card otherwise) which becomes the current Card. This repeats till all paths have been added and traveresed.
+
+```javascript
+player.thread(scenes, roles, moves)
+```
 
 **weave**: The weave method utilizes the thread method to weave several threads, much like weaving a tapestry.
 
-**navigate**: The navigate method is a generator that iterates through paths and keeps track of the previous card and stores it in the positions set, effectively allowing for bidirectional navigation. It yields a new context each time it steps through the path.
+```javascript
+player.weave([
+[scenes, roles, moves]
+[scenes, roles, moves]
+[scenes, roles, moves] 
+])
+```
 
-**substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution. The significance of this and its parallels to the lambda calculus will be explored in later sections.
+**navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
 
-**snapshot**:
+```javascript
+player.navigate(scenes, roles, moves)
+```
+
+**substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution of. The significance of this and its parallels to the lambda calculus will be explored in later sections.
+
+**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair only at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
+
+**snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
 
@@ -81,13 +112,27 @@ This mirrors the way human cognition often works: we constantly make connections
 
 With metaphor-dive, the Card graph can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
 
+# Beyond the Literary Form
+
+Cards going byeond our current literary form. Speaking in card graphs, icons as networks made sensual. Metaphoric expression, poetics.
+
 # Cyclic Tautologies
 
 Reason as Testing Laws, cyclic tautologies in the card-graph upon interpretation through rules of inference.
 
-# Beyond the Literary Form
+# Meta-linguistic Assertions
 
-Cards going byeond our current literary form. Speaking in card graphs, icons as networks made sensual. Metaphoric expression, poetics.
+"The **role** A plays in **scene** X is functionally pragmatically equivalent (scalar correlation) to the **role** B plays in **scene** Y."
+
+# Games
+
+**Scenario Based Programming with Cards**
+
+Every Event is a card, a monad/perspective/point of view on a card-graph.
+
+**story**
+
+---
 
 # Install
 
