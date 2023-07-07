@@ -76,59 +76,59 @@ const edges = new Oxel("edges");
 // -------------------------------------------------------
 
 async function composeOxels() {
-  const gameState = new Oxel();
+  const gameState = new Oxel("gameState");
 
   // A game setting contains scenes and roles
-  await gameState.weave(setting, scenes);
-  await gameState.weave(setting, roles);
+  await gameState.thread(setting, scenes);
+  await gameState.thread(setting, roles);
 
   // Each scene has potential moves
-  await gameState.weave(scene, potential, moves);
+  await gameState.thread(scene, potential, moves);
 
   // A role can take an actual move, creating an output from an input
-  await gameState.weave(role, actual, move, input);
-  await gameState.weave(role, actual, move, output);
+  await gameState.thread(role, actual, move, input);
+  await gameState.thread(role, actual, move, output);
 
   // A move can shift the state of the game and involve a specific role
-  await gameState.weave(move, shift, gameState);
-  await gameState.weave(move, role);
+  await gameState.thread(move, shift, gameState);
+  await gameState.thread(move, role);
 
   // The game contains a container, which contains slots. Each slot has a token, and each token has a value.
-  await gameState.weave(gameState, container, slot, token, value);
+  await gameState.thread(gameState, container, slot, token, value);
 
   // A token has an obligation (right) to follow certain operations (ops)
-  await gameState.weave(token, obligation, op);
+  await gameState.thread(token, obligation, op);
 
   // A card in the game has a title and a description
-  await gameState.weave(card, title);
-  await gameState.weave(card, description);
+  await gameState.thread(card, title);
+  await gameState.thread(card, description);
 
   // The game has a deck of cards and each player has a hand of cards
-  await gameState.weave(gameState, deck);
+  await gameState.thread(gameState, deck);
   // assuming a player is a role in this context
-  await gameState.weave(role, hand);
+  await gameState.thread(role, hand);
 
   // Each role in the game may offer specific ops
-  await gameState.weave(role, offer, op);
+  await gameState.thread(role, offer, op);
 
   // There are filter layers that affect roles' operations
-  await gameState.weave(filterLayer, role, op);
+  await gameState.thread(filterLayer, role, op);
 
   // There's a dungeon which is a specific type of scene in the game, and it might have several levels (mega-dungeon)
-  await gameState.weave(dungeon, scene);
-  await gameState.weave(megaDungeon, dungeon);
+  await gameState.thread(dungeon, scene);
+  await gameState.thread(megaDungeon, dungeon);
 
   // The game has a playing board which is mapped, and each path on the map has dots
-  await gameState.weave(playingBoard, map);
-  await gameState.weave(path, dotsOnPath);
+  await gameState.thread(playingBoard, map);
+  await gameState.thread(path, dotsOnPath);
 
   // Stacks, sides, and edges are characteristics of the board
-  await gameState.weave(playingBoard, characteristic, stacks);
-  await gameState.weave(playingBoard, characteristic, sides);
-  await gameState.weave(playingBoard, characteristic, edges);
+  await gameState.thread(playingBoard, characteristic, stacks);
+  await gameState.thread(playingBoard, characteristic, sides);
+  await gameState.thread(playingBoard, characteristic, edges);
 
   // A portal may be present on the board that changes the state of the game when a token enters it
-  await gameState.weave(playingBoard, portal, token, shift, gameState);
+  await gameState.thread(playingBoard, portal, token, shift, gameState);
 
   return gameState;
 }
