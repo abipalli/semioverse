@@ -16,7 +16,7 @@ Indeed for what the **movie** itself lacked in *receptivity* and *mutability* it
 
 **Interfacing interface** brings *mutability*, *extensiveness*, *interactivity*, *receptivity* to the architecture/frame of **interface** itself through **interface** itself. The injunction of this medium is ***Play!***
 
-(Add note on a language as interfacing interfacing)
+*(Add note on a language as interfacing interfacing)*
 
 ---
 
@@ -77,7 +77,7 @@ player.navigate(scenes, roles, moves)
 
 **substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution of. The significance of this and its parallels to the lambda calculus will be explored in later sections.
 
-**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair only at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
+**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
 
 **snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
@@ -85,7 +85,7 @@ What emerges from the methods introduced so far is a dynamic system of meaning w
 
 # Extensions
 
-Extensions provided (condTransformExtension, condDissassociatorExtension, delegatorExtension, eventExtension, eventDelegatorExtension, runnerExtension) are factory functions to extend a Card instance with new properties and functionalities.
+Extensions provided are factory functions to extend a Card instance with new properties and functionalities.
 
 * condTransformExtension: Provides conditional transformation capability to a card.
 * condDissassociatorExtension: Provides capability to conditionally dissociate certain keys from a card.
@@ -120,9 +120,13 @@ Cards going byeond our current literary form. Speaking in card graphs, icons as 
 
 Reason as Testing Laws, cyclic tautologies in the card-graph upon interpretation through rules of inference.
 
+---
+
 # Meta-linguistic Assertions
 
 "The **role** A plays in **scene** X is functionally pragmatically equivalent (scalar correlation) to the **role** B plays in **scene** Y."
+
+---
 
 # Games
 
@@ -136,7 +140,7 @@ Every Event is a card, a monad/perspective/point of view on a card-graph.
 
 # Install
 
-[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from networking. [!]
+*[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from Hyperswarm networking.* 
 
 In the future distributed networking will occur in the browser with no need for installation. Currently however, using hyperswarm requires us to run locally using node.
 

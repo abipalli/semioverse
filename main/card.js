@@ -1,12 +1,12 @@
 export default class Card extends Map {
   constructor(name, value, ruleEngine = async () => true, ...args) {
     super(...args);
-    this.name = name;
-    this.value = value;
+    this.names = new Map().set(name, new Map());
+    this.values = new Map().set(value, new Map());
+    this.ruleEngine = ruleEngine; // this should be made into Map
     this.positions = new Set();
-    //this._messages = []; // add actorish message passing?
-    this.expressions = new Set();
-    this.ruleEngine = ruleEngine;
+    this.expressions = new Set(); // this should be made into Map
+    this.messages = [];
 
     return new Proxy(this, {
       get: (target, prop, receiver) => {
@@ -108,20 +108,20 @@ export default class Card extends Map {
     if (!(await this.checkRule(this, "thread", paths))) {
       throw new Error(`Call to thread is not allowed`);
     }
-    let map = this;
-    let initmap = map;
+    let card = this;
+    let initcard = card;
     for await (const path of paths) {
-      if (map instanceof Map || map instanceof Card) {
-        if (!map.has(path)) {
-          map.set(path, new Card());
+      if (card instanceof Map || card instanceof Card) {
+        if (!card.has(path)) {
+          card.set(path, new Card());
         }
-        map = map.get(path);
+        card = card.get(path);
       } else {
-        throw new Error("map is not instanceof Map or Card");
+        throw new Error("card is not instanceof Map or Card");
         // break
       }
     }
-    return initmap;
+    return initcard;
   }
 
   async weave(...threads) {
@@ -149,6 +149,7 @@ export default class Card extends Map {
       if (!done) {
         if (path === "metaphor-dive") {
           // as a reserved keyword we must make sure that it cant be used as a key elsewhere
+          // possibly make the metaphor dive itself a card
           const peek = pathsIterator.next();
           if (!peek.done && currentCard.has(peek.value)) {
             const nextPath = peek.value;
@@ -208,12 +209,15 @@ export default class Card extends Map {
         let nextResult = await iterator.next();
         if (nextResult.done) {
           originalKey = result.value.pathTaken;
-          if (result.value.currentCard.has(originalKey)) {
+          if (
+            result.value.previousCard &&
+            result.value.previousCard.has(originalKey)
+          ) {
             // Save the original value before overwriting
-            const originalValue = result.value.currentCard.get(originalKey);
+            const originalValue = result.value.previousCard.get(originalKey);
             // Overwrite the original entry with the new key-value pair
-            result.value.currentCard.delete(originalKey);
-            result.value.currentCard.set(key, value);
+            result.value.previousCard.delete(originalKey);
+            result.value.previousCard.set(key, value);
             // Yield the removed entry
             yield { key: originalKey, value: originalValue };
           }

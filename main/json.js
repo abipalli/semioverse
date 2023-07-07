@@ -1,5 +1,7 @@
 import Card from "./card.js";
 
+// Does this mantain the proxy?
+
 function cardToJSON(card) {
   // Convert the Map to an array of key-value pairs
   const mapData = Array.from(card.entries()).map(([key, value]) => {

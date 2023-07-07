@@ -1,75 +1,136 @@
-import Card from "../card.js";
+import Oxel from "../refactor.js";
 
-const setting = new Card("setting");
-const scene = new Card("scene");
-const role = new Card("role");
-const move = new Card("move");
+const setting = new Oxel("setting");
+const scene = new Oxel("scene");
+const role = new Oxel("role");
+const move = new Oxel("move");
 
-const scenes = new Card("scenes");
-const roles = new Card("roles");
-const moves = new Card("moves");
+const scenes = new Oxel("scenes");
+const roles = new Oxel("roles");
+const moves = new Oxel("moves");
 
-const actual = new Card("actual");
-const potential = new Card("potential");
-const input = new Card("input");
-const output = new Card("output");
+const actual = new Oxel("actual");
+const potential = new Oxel("potential");
+const input = new Oxel("input");
+const output = new Oxel("output");
 
-const container = new Card("container");
-const slot = new Card("slot");
+const container = new Oxel("container");
+const slot = new Oxel("slot");
 
-const value = new Card("value");
+const value = new Oxel("value");
 
-const point = new Card("point");
-const token = new Card("token");
+const point = new Oxel("point");
+const token = new Oxel("token");
 
-const right = new Card("right");
-const obligation = new Card("obligation");
+const right = new Oxel("right");
+const obligation = new Oxel("obligation");
+const oxel = new Oxel("oxel");
 
-const asset = new Card("asset");
-const liability = new Card("liability");
+const asset = new Oxel("asset");
+const liability = new Oxel("liability");
 
-const turn = new Card("turn");
-const characteristic = new Card("characteristic");
+const turn = new Oxel("turn");
+const characteristic = new Oxel("characteristic");
 
-const card = new Card("card");
-const title = new Card("title");
-const description = new Card("description");
-const deck = new Card("deck");
-const hand = new Card("hand");
-const suite = new Card("suite");
+const card = new Oxel("card");
+const title = new Oxel("title");
+const description = new Oxel("description");
+const deck = new Oxel("deck");
+const hand = new Oxel("hand");
+const suite = new Oxel("suite");
 
-const offer = new Card("offer");
-const op = new Card("op");
+const offer = new Oxel("offer");
+const op = new Oxel("op");
 
-const shift = new Card("shift");
-const replace = new Card("replace");
+const shift = new Oxel("shift");
+const replace = new Oxel("replace");
 
-const filter = new Card("filter");
-const filterLayer = new Card("filter-layer");
+const filter = new Oxel("filter");
+const filterLayer = new Oxel("filter-layer");
 
 // Logical Operators
-const ANY = new Card("ANY");
-const ALL = new Card("ALL");
-const NOT = new Card("NOT");
-const OR = new Card("OR");
-const IMPLY = new Card("IMPLY"); // if...then : material implication
-const XNOR = new Card("XNOR"); // if and only if	: biconditional
-const NAND = new Card("NAND"); // not both	: alternative denial
-const NOR = new Card("NOR"); // neither...nor	: joint denial
-const NIMPLY = new Card("NIMPLY"); //but not	: material nonimplication
+const ANY = new Oxel("ANY");
+const ALL = new Oxel("ALL");
+const NOT = new Oxel("NOT");
+const OR = new Oxel("OR");
+const IMPLY = new Oxel("IMPLY"); // if...then : material implication
+const XNOR = new Oxel("XNOR"); // if and only if	: biconditional
+const NAND = new Oxel("NAND"); // not both	: alternative denial
+const NOR = new Oxel("NOR"); // neither...nor	: joint denial
+const NIMPLY = new Oxel("NIMPLY"); //but not	: material nonimplication
 
-const dungeon = new Card("dungeon");
-const megaDungeon = new Card("mega-dungeon");
+const dungeon = new Oxel("dungeon");
+const megaDungeon = new Oxel("mega-dungeon");
 
-const board = new Card("board");
-const playingBoard = new Card("playing board");
+const board = new Oxel("board");
+const playingBoard = new Oxel("playing board");
 
-const portal = new Card("portal");
-const map = new Card("map");
-const path = new Card("path");
-const dotsOnPath = new Card("dots on path");
-const stacks = new Card("stacks");
-const sides = new Card("sides");
-const edges = new Card("edges");
+const portal = new Oxel("portal");
+const map = new Oxel("map");
+const path = new Oxel("path");
+const dotsOnPath = new Oxel("dots on path");
+const stacks = new Oxel("stacks");
+const sides = new Oxel("sides");
+const edges = new Oxel("edges");
 
 // -------------------------------------------------------
+
+async function composeOxels() {
+  const gameState = new Oxel();
+
+  // A game setting contains scenes and roles
+  await gameState.weave(setting, scenes);
+  await gameState.weave(setting, roles);
+
+  // Each scene has potential moves
+  await gameState.weave(scene, potential, moves);
+
+  // A role can take an actual move, creating an output from an input
+  await gameState.weave(role, actual, move, input);
+  await gameState.weave(role, actual, move, output);
+
+  // A move can shift the state of the game and involve a specific role
+  await gameState.weave(move, shift, gameState);
+  await gameState.weave(move, role);
+
+  // The game contains a container, which contains slots. Each slot has a token, and each token has a value.
+  await gameState.weave(gameState, container, slot, token, value);
+
+  // A token has an obligation (right) to follow certain operations (ops)
+  await gameState.weave(token, obligation, op);
+
+  // A card in the game has a title and a description
+  await gameState.weave(card, title);
+  await gameState.weave(card, description);
+
+  // The game has a deck of cards and each player has a hand of cards
+  await gameState.weave(gameState, deck);
+  // assuming a player is a role in this context
+  await gameState.weave(role, hand);
+
+  // Each role in the game may offer specific ops
+  await gameState.weave(role, offer, op);
+
+  // There are filter layers that affect roles' operations
+  await gameState.weave(filterLayer, role, op);
+
+  // There's a dungeon which is a specific type of scene in the game, and it might have several levels (mega-dungeon)
+  await gameState.weave(dungeon, scene);
+  await gameState.weave(megaDungeon, dungeon);
+
+  // The game has a playing board which is mapped, and each path on the map has dots
+  await gameState.weave(playingBoard, map);
+  await gameState.weave(path, dotsOnPath);
+
+  // Stacks, sides, and edges are characteristics of the board
+  await gameState.weave(playingBoard, characteristic, stacks);
+  await gameState.weave(playingBoard, characteristic, sides);
+  await gameState.weave(playingBoard, characteristic, edges);
+
+  // A portal may be present on the board that changes the state of the game when a token enters it
+  await gameState.weave(playingBoard, portal, token, shift, gameState);
+
+  return gameState;
+}
+
+console.log(await composeOxels());
