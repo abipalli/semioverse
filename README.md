@@ -91,7 +91,7 @@ The interpreter would start by looking at the root of the graph (in our compare 
 
 In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Syntax Graphs that help the interpretor understand what the values associated with that key represent.
 
-![interpretor](image/README/1688826008175.png)
+![interpretor](image/README/interpretor.png)
 
 Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as data structures themselves.
 
