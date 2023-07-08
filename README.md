@@ -73,7 +73,7 @@ player.weave([
 
 ![1688826697642](image/README/weave.png)
 
-**hasThread:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
+**hasThread:** This method can help to check if a particular thread exists within a Card, and it could be used for checking conditions in gameplay rules.
 
 **navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
 
@@ -86,33 +86,6 @@ player.navigate(scenes, roles, moves)
 **snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
-
-# Interpretation
-
-When given a card-graph that represents a rule or function, the system would need to perform a sort of interpretation or compilation step to translate the oxel-graph into an executable format.
-
-The interpreter would start by looking at the root of the graph (in our compare function example, this would be the oxel associated with the "compare" key). It would then traverse the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
-
-In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what the values associated with that key represent.
-
-![interpretor](image/README/interpretor.png)
-
-Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as data structures themselves.
-
-While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the key 'if-else', it knows to evaluate the 'condition' and branch accordingly. Similarly, 'return' key would indicate a return statement, and its value would be the return value.
-
-Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic programming language and datastructure, that treats operations and card-graphs while encoding their grammar as card-graphs effectively blurring the line between code and data. 
-
-# Extensions
-
-Extensions provided are factory functions to extend a Card instance with new properties and functionalities.
-
-* condTransformExtension: Provides conditional transformation capability to a card.
-* condDissassociatorExtension: Provides capability to conditionally dissociate certain keys from a card.
-* delegatorExtension: Adds delegation capabilities to a card, enabling it to delegate a method call based on certain conditions.
-* eventExtension: Adds event handling capabilities to a card, allowing it to respond to and emit events.
-* eventDelegatorExtension: Adds event delegation capabilities to a card, enabling it to delegate a method call and respond to the completion of the delegation with an event.
-* runnerExtension: This extension is intended to add execution capabilities to a Card, allowing the Card to maintain a state and execute defined delegators.
 
 ## Metaphor
 
@@ -131,6 +104,33 @@ When the navigation method encounters the "metaphor-dive" token, it traverses in
 This mirrors the way human cognition often works: we constantly make connections between seemingly unrelated concepts based on their shared properties or associated ideas. A classic example is how the word 'network' has been borrowed from its original physical sense (a net-like structure) to describe social and computer systems.
 
 With metaphor-dive, the Card graph can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
+
+# Interpretation
+
+When given a card-graph that represents a rule or function, the system would need to perform a sort of interpretation or compilation step to translate the card-graph into an executable format.
+
+The interpreter would start by looking at the root of the graph (in our compare function example, this would be the card associated with the "compare" key). It would then traverse the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
+
+In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what the values associated with that key represent.
+
+![interpretor](image/README/interpretor.png)
+
+Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as data structures themselves.
+
+While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the key 'if-else', it knows to evaluate the 'condition' and branch accordingly. Similarly, 'return' key would indicate a return statement, and its value would be the return value.
+
+Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic programming language and datastructure, that treats operations and card-graphs while encoding their grammar as card-graphs effectively blurring the line between code and data.
+
+# Extensions
+
+Extensions provided are factory functions to extend a Card instance with new properties and functionalities.
+
+* condTransformExtension: Provides conditional transformation capability to a card.
+* condDissassociatorExtension: Provides capability to conditionally dissociate certain keys from a card.
+* delegatorExtension: Adds delegation capabilities to a card, enabling it to delegate a method call based on certain conditions.
+* eventExtension: Adds event handling capabilities to a card, allowing it to respond to and emit events.
+* eventDelegatorExtension: Adds event delegation capabilities to a card, enabling it to delegate a method call and respond to the completion of the delegation with an event.
+* runnerExtension: This extension is intended to add execution capabilities to a Card, allowing the Card to maintain a state and execute defined delegators.
 
 # Beyond the Literary Form
 
