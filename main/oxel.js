@@ -31,6 +31,24 @@ export default class Oxel extends Map {
     return initcard;
   }
 
+  async hasThread(...paths) {
+    if (!(await this.checkRule(this, "hasThread", paths))) {
+      throw new Error(`Call to hasThread is not allowed`);
+    }
+    let card = this;
+    for await (const path of paths) {
+      if (card instanceof Map || card instanceof Oxel) {
+        if (!card.has(path)) {
+          return false;
+        }
+        card = card.get(path);
+      } else {
+        throw new Error("map is not instanceof Map or Oxel");
+      }
+    }
+    return true;
+  }
+
   async weave(...threads) {
     if (!(await this.checkRule(this, "weave", threads))) {
       throw new Error(`Call to weave is not allowed`);

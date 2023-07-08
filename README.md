@@ -69,19 +69,35 @@ player.weave([
 ])
 ```
 
+**hasThread:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
+
 **navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
 
 ```javascript
 player.navigate(scenes, roles, moves)
 ```
 
-**substitute**: The substitute method is an act of exchange, replacing one signifier with another within the structure of the Card Graph. It functions by navigating along defined routes and performing a substitution of. The significance of this and its parallels to the lambda calculus will be explored in later sections.
-
-**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
+**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller. The significance of this and its parallels to the lambda calculus will be explored in later sections.
 
 **snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
+
+# Interpretation
+
+When given a card-graph that represents a rule or function, the system would need to perform a sort of interpretation or compilation step to translate the oxel-graph into an executable format.
+
+The interpreter would start by looking at the root of the graph (in our compare function example, this would be the oxel associated with the "compare" key). It would then traverse the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
+
+In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Syntax Graphs that help the interpretor understand what the values associated with that key represent.
+
+![interpretor](image/README/1688826008175.png)
+
+Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as data structures themselves.
+
+While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the key 'if-else', it knows to evaluate the 'condition' and branch accordingly. Similarly, 'return' key would indicate a return statement, and its value would be the return value.
+
+Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic programming language and datastructure, that treats operations and card-graphs while encoding their grammar as card-graphs effectively blurring the line between code and data. 
 
 # Extensions
 
@@ -140,7 +156,7 @@ Every Event is a card, a monad/perspective/point of view on a card-graph.
 
 # Install
 
-*[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from Hyperswarm networking.* 
+*[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from Hyperswarm networking.*
 
 In the future distributed networking will occur in the browser with no need for installation. Currently however, using hyperswarm requires us to run locally using node.
 
