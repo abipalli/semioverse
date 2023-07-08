@@ -93,7 +93,7 @@ When given a card-graph that represents a rule or function, the system would nee
 
 The interpreter would start by looking at the root of the graph (in our compare function example, this would be the oxel associated with the "compare" key). It would then traverse the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
 
-In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Syntax Graphs that help the interpretor understand what the values associated with that key represent.
+In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what the values associated with that key represent.
 
 ![interpretor](image/README/interpretor.png)
 
