@@ -59,6 +59,8 @@ const moves = new Card("moves");
 player.thread(scenes, roles, moves)
 ```
 
+![Thread](image/README/thread.png)
+
 **weave**: The weave method utilizes the thread method to weave several threads, much like weaving a tapestry.
 
 ```javascript
@@ -68,6 +70,8 @@ player.weave([
 [scenes, roles, moves] 
 ])
 ```
+
+![1688826697642](image/README/weave.png)
 
 **hasThread:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
 
