@@ -1,6 +1,6 @@
-import Card from "./card.js";
+import Oxel from "./card.js";
 
-export default class Game extends Card {
+export default class Game extends Oxel {
   constructor(...args) {
     super(args);
     this._messages = [];
@@ -72,9 +72,9 @@ export default class Game extends Card {
   async express(...threads) {
     // Input Schema: [_Source/Target/Expressions_] : [_Plaything_] : [Scenes] : [_Scene_] : [Roles] : [_Role_]: [Moves] : [_Move_]
     // a thread is an iterable of values, or object-references.
-    let expr = new Card();
-    expr.set("sources", new Card());
-    expr.set("targets", new Card());
+    let expr = new Oxel();
+    expr.set("sources", new Oxel());
+    expr.set("targets", new Oxel());
 
     for (const thrd of threads) {
       await thread(expr, ...thrd); // assuming each thread is an array, spread it as arguments
@@ -82,7 +82,7 @@ export default class Game extends Card {
 
     for (const key of expr.keys()) {
       let value = expr.get(key);
-      if (value instanceof Map || value instanceof Card) {
+      if (value instanceof Map || value instanceof Oxel) {
         // we make the assumption that the second nested key after sources, targets, and expressions
         // is always scenes
         for (const scene of expr.get(key)) {

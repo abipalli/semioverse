@@ -1,4 +1,4 @@
-import Oxel from "../refactor.js";
+import Oxel from "../oxel.js";
 
 const setting = new Oxel("setting");
 const scene = new Oxel("scene");
@@ -16,6 +16,7 @@ const output = new Oxel("output");
 
 const container = new Oxel("container");
 const slot = new Oxel("slot");
+const trigger = new Oxel("trigger");
 
 const value = new Oxel("value");
 
@@ -25,6 +26,9 @@ const token = new Oxel("token");
 const right = new Oxel("right");
 const obligation = new Oxel("obligation");
 const oxel = new Oxel("oxel");
+
+const story = new Oxel("story");
+const event = new Oxel("event");
 
 const asset = new Oxel("asset");
 const liability = new Oxel("liability");
