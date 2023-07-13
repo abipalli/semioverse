@@ -37,7 +37,7 @@ In essence, the Card is more than a data structure. It's a semiotic game-board, 
 
 # What? That sounds crazy! What do they do exactly?
 
-The Card class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type including other Card instances. This creates an network of iterable sets of associations/relationships that are the key-value pairs of each Card.
+The Card class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where **keys and values can be of any type including other Card instances**. This creates an network of iterable sets of associations/relationships that are the key-value pairs of each Card.
 
 The Card class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
 
@@ -94,7 +94,7 @@ What emerges from the methods introduced so far is a dynamic system of meaning w
 
 You would embark on a process of threading from yourself to others: `self.thread(relation, otherperson1, relation, otherperson2, ...etc)`. Yet, this thread does not record a direct relationship between two individuals. **Instead, the relationship is mediated, emerging from the self as the root.**
 
-Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the constellation of relationships exist on a horizon of meaning extending from the self, and the same constellations (all else remaining constant) dont necessarily extend from the other.* If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. **This means that every card can be considered a perspective/point of view of a relational graph.**
+Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the constellation of relationships exist on a horizon of meaning extending from the self, and the same constellations (all else remaining constant) doesn't necessarily extend from the other into their horizon of meaning.* If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. **This means that every card can be considered a perspective/point of view of a relational graph.**
 
 ## Metaphor
 
