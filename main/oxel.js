@@ -427,9 +427,6 @@ export default class Oxel extends Map {
     return await this.ruleEngine(target, prop, value);
   }
 
-  async checkRule(target, prop, value = null) {
-    return await this.ruleEngine(target, prop, value);
-  }
   [Symbol.asyncIterator]() {
     const entries = this.entries();
     return {
