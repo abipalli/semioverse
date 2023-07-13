@@ -31,7 +31,7 @@ Cards are a transformative data structure that revolutionizes the way we compose
 
 Cards come alive with their metaphoric capabilities. Like signifiers in semiotics, Cards can be used to understand other systems or levels of abstraction, allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating this network, a Card can 'dive' into another Card, tracing the metaphoric pathways that bind them together. This mirrors human cognition, turning Cards into a playground for computational creativity. Cards are both a vessel to navigate the semioverse, as well as that which makes up its structure.
 
-In essence, the Card is more than a data structure. It's a semiotic game-board, a tool for modeling and navigating interconnected concepts and relationships. Whether you're building a game, exploring a social network, or constructing a semio-dimensional grammar, the Card is your key to unlocking new depths of understanding and connection. Cards effectively allow us to move beyond the literary form! Welcome to the Semioverse, where Cards are the language and the landscape!
+In essence, the Card is more than a data structure. It's a semiotic game-board, a tool for modeling and navigating interconnected concepts and relationships. Whether you're building a game, exploring a social network, or constructing a semio-dimensional grammar, the Card is your key to unlocking new depths of understanding and connection. Cards effectively allow us to move beyond the linearity of the literary form itself! Welcome to the Semioverse, where Cards are the language and the landscape!
 
 ---
 
@@ -74,19 +74,19 @@ player.weave([
 
 **hasThread:** This method can help to check if a particular thread exists within a Card, and it could be used for checking conditions in gameplay rules.
 
-**navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
+**navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the` rule engine` and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword `"metaphor-dive"`, it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
 
 ```javascript
 player.navigate(scenes, roles, moves)
 ```
 
-**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller. The significance of this and its parallels to the lambda calculus will be explored in later sections.
+**swap**: This method is used to replace a value at the given key in a `Card` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller. *The significance of this and its parallels to the lambda calculus will be explored in later sections.*
 
 **snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (swap).
 
-*(note that in the future we want to make all methods and properties cards themselves that are woven, and use the card-based interpreter )*
+*(note that in the future we want to make all methods and properties cards themselves that are woven, and use the card-based interpreter)*
 
 # Cards as perspectives
 
@@ -94,7 +94,7 @@ What emerges from the methods introduced so far is a dynamic system of meaning w
 
 You would embark on a process of threading from yourself to others: `self.thread(relation, otherperson1, relation, otherperson2, ...etc)`. Yet, this thread does not record a direct relationship between two individuals. **Instead, the relationship is mediated, emerging from the self as the root.**
 
-Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the relationships remain firmly tethered to the self, and are not independent of it.* If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. **This means that every card can be considered a perspective/point of view of a relational graph.**
+Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the constellation of relationships exist on a horizon of meaning extending from the self, and the same constellations (all else remaining constant) dont necessarily extend from the other.* If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. **This means that every card can be considered a perspective/point of view of a relational graph.**
 
 ## Metaphor
 
@@ -118,7 +118,7 @@ With metaphor-dive, the Card graph can support more sophisticated forms of reaso
 
 The interpreter starts by looking at the root of the graph. It then traverses the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
 
-In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what each of the nodes in value-graph represent by associating them with their iteratively correspondant node in the key-graph.
+In this sense the keys of each card, are their own card-graphs that can be interpreted as *schemas* or Abstract Semantic Graphs that help the interpretor understand what each of the nodes in value-graph represent by associating them with their iteratively correspondant node in the key-graph.
 
 ![interpretor](image/README/interpretor.png)
 
@@ -126,7 +126,7 @@ Each of these structures might have a corresponding interpretation rule-card in 
 
 While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the 'if-else' key-card, it knows to evaluate the 'condition' card in the value and branch accordingly. Similarly, 'return' key-card would indicate a return statement, and its value would be the return value.
 
-Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic interface, programming language and datastructure.
+**Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic interface, programming language and datastructure.**
 
 # Semio-dimensional Grammars
 
@@ -137,6 +137,7 @@ Because the interpretors rule-cards are themselves card-graphs that are interpre
 # Meta-linguistic Assertions
 
 "The **role** A plays in **scene** X is functionally pragmatically equivalent (scalar correlation) to the **role** B plays in **scene** Y."
+*(This kind of statement can be explicit or implicit in parsing: see semio-dimensional grammars)*
 
 ---
 
