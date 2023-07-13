@@ -1,4 +1,4 @@
-import Oxel from "./card.js";
+import Oxel from "./oxel.js";
 
 export default class Game extends Oxel {
   constructor(...args) {

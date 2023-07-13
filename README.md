@@ -36,11 +36,11 @@ With this architecture, semiotic interaction is not only happening within each g
 
 ---
 
-# Cards
+# Oxels
 
-The Card class creates a non-linear graph of nodes where every node (Card) itself can contain other nodes (Cards). This creates an intricate web of relationships that are defined by both the keys and values of each Card. The Card class extends the Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type.
+The Oxel class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type. This class represents a node in a graph-like data structure. Each instance of the Oxel class can store key-value pairs, where both keys and values can be other Oxel instances or any other types. This creates an intricate web of sets of iterable associations/relationships that are the key-value pairs of each Card.
 
-The Card class includes methods such as thread, weave, navigate, and substitute, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
+The Card class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
 
 **Constructor** : It accepts four parameters `name`, `value`, `ruleEngine`, and `...args`. The `ruleEngine` is an optional async function that defaults to a function returning `true`.
 
@@ -73,6 +73,16 @@ player.weave([
 
 ![1688826697642](image/README/weave.png)
 
+**Interestingly the structure created by threading/weaving cards embodies the concept of perception.**
+
+For example, imagine constructing cards to symbolize all individuals populating your life-world, yourself included.
+
+You would then embark on a process of threading from the yourself to others - self.thread(relation, otherperson1, relation, otherperson2, ...etc). Yet, this weaving does not formulate a direct relationship between two individuals. Instead, the relationship is mediated, emerging from the self as the root.
+
+Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. However, the relationships remain firmly tethered to the self, and are not independent of it. If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self.
+
+The structure born of this threading and weaving process is not merely a collection of relationships, but a reflection of the self's perception of these relationships.
+
 **hasThread:** This method can help to check if a particular thread exists within a Card, and it could be used for checking conditions in gameplay rules.
 
 **navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
@@ -85,7 +95,9 @@ player.navigate(scenes, roles, moves)
 
 **snapshot**: This method is used to create a snapshot of the current state of the `Card` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Card` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the state-of-play in order to undo moves or to provide proofs of state.
 
-What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (substitute).
+What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (swap).
+
+*(note that in the future we want to make all methods and properties cards themselves that are woven, and use the card-based interpreter )*
 
 ## Metaphor
 
@@ -101,25 +113,27 @@ When the navigation method encounters the "metaphor-dive" token, it performs 'ju
 
 When the navigation method encounters the "metaphor-dive" token, it traverses into the card that is being used as a key in the current card. Rather than traversing the “metonymic axis” of language the “metaphor-dive” allows for traversals across the “metaphoric axis” of language. A metonymic thread can then consist entirely of metaphors.
 
-This mirrors the way human cognition often works: we constantly make connections between seemingly unrelated concepts based on their shared properties or associated ideas. A classic example is how the word 'network' has been borrowed from its original physical sense (a net-like structure) to describe social and computer systems.
+This mirrors the way human cognition often works: we constantly make connections between seemingly unrelated concepts based on their shared properties or associated ideas. For example, the word 'network' has been borrowed from its original physical sense (a net-like structure) to describe social and computer systems.
 
 With metaphor-dive, the Card graph can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Card graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
 
 # Interpretation
 
-When given a card-graph that represents a rule or function, the system would need to perform a sort of interpretation or compilation step to translate the card-graph into an executable format.
+The interpreter starts by looking at the root of the graph. It then traverses the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
 
-The interpreter would start by looking at the root of the graph (in our compare function example, this would be the card associated with the "compare" key). It would then traverse the graph according to the "grammar" encoded in the keys ("parameters", "functionBlock", "if-else", "condition", etc.). Each key tells the interpreter what to do next: gather parameters, evaluate a condition, and so on.
-
-In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what the values associated with that key represent.
+In this sense the keys of each card, are their own card-graphs that can be interpreted as schemas or Abstract Semantic Graphs that help the interpretor understand what each of the nodes in value-graph represent by associating them with their iteratively correspondant node in the key-graph.
 
 ![interpretor](image/README/interpretor.png)
 
-Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as data structures themselves.
+Each of these structures might have a corresponding interpretation rule-card in the interpretor, effectively creating a language of cards. This enables not just data, but also operations, control flows, and functions to be represented and manipulated as cards themselves.
 
-While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the key 'if-else', it knows to evaluate the 'condition' and branch accordingly. Similarly, 'return' key would indicate a return statement, and its value would be the return value.
+While traversing through this card-graph, the interpretor would parse the keys and values, interpreting them based on their role. For example, when it comes across the 'if-else' key-card, it knows to evaluate the 'condition' card in the value and branch accordingly. Similarly, 'return' key-card would indicate a return statement, and its value would be the return value.
 
-Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic programming language and datastructure, that treats operations and card-graphs while encoding their grammar as card-graphs effectively blurring the line between code and data.
+Because the interpretors rule-cards are themselves card-graphs that are interpreted through this same process, we obtain a meta-circular and homoiconic interface, programming language and datastructure.
+
+# Semio-dimensional Grammars
+
+*This section would make absurdly huge claims, and the proposed parse/fuse function is not yet satisfactorally implimented, so this section has been left out of this readme and included in this Github Issue: https://github.com/semioverse/semioverse/issues/2*
 
 # Extensions
 
@@ -131,14 +145,6 @@ Extensions provided are factory functions to extend a Card instance with new pro
 * eventExtension: Adds event handling capabilities to a card, allowing it to respond to and emit events.
 * eventDelegatorExtension: Adds event delegation capabilities to a card, enabling it to delegate a method call and respond to the completion of the delegation with an event.
 * runnerExtension: This extension is intended to add execution capabilities to a Card, allowing the Card to maintain a state and execute defined delegators.
-
-# Beyond the Literary Form
-
-Cards going byeond our current literary form. Speaking in card graphs, icons as networks made sensual. Metaphoric expression, poetics.
-
-# Cyclic Tautologies
-
-Reason as Testing Laws, cyclic tautologies in the card-graph upon interpretation through rules of inference.
 
 ---
 
@@ -152,9 +158,9 @@ Reason as Testing Laws, cyclic tautologies in the card-graph upon interpretation
 
 **Scenario Based Programming with Cards**
 
-Every Event is a card, a monad/perspective/point of view on a card-graph.
+Every Event is a card, a monad/perspective/point of view on a card-graph. **story.**
 
-**story**
+*(This is currently being pursued with FlowCards)*
 
 ---
 
@@ -181,22 +187,6 @@ http-server
 ```
 
 Open the browser and go to http://127.0.0.1:8080
-
-# Onwards!
-
-    Graph-based Computation and Data Flow Programming: The Card class can be seen as a basic building block for a graph-based computation system. Complex operations can be broken down into simpler operations and represented as a graph of Card instances. The navigate function can be used to traverse this graph, essentially executing the operation. The substitute function can perform substitutions in the graph, acting like computation in the data flow. This is akin to data flow programming where the focus is on the movement and transformation of data within the system.
-
-    Visual Programming Environments: With its ability to model complex operation-operand structures as graphs, the Card class can be used as the basis for a visual programming environment. Each Card can be represented visually as a node, with threads between nodes representing the relationships between them. This can make programming more accessible and intuitive, especially for people who are new to coding.
-
-    Metaphorical and Semantic Computing: The ability of the Card class to use other Card instances as keys opens up possibilities for metaphorical and semantic computing. This can allow for the creation of systems that can understand and reason with metaphors, opening up new possibilities in fields like natural language processing and intelligence.
-
-    Interactive Storytelling and Game Design: The Card class can be used to create interactive narratives or game worlds. Each Card can represent a scene, character, or object, with the relationships between cards defining the structure of the narrative or game world. This can allow for highly interactive and non-linear storytelling experiences.
-
-    Modular and Expandable Software Design: With its thread, weave, navigate, and substitute methods, the Card class provides a strong foundation for modular and expandable software design. New functionalities can be added by simply adding new Card instances and threading them appropriately.
-
-    Systems Simulation: The multi-dimensional nature of the Card system provides a powerful structure for system simulations. It can be utilized to represent a range of systems from simple hierarchical structures to more complex nested systems. For example, in an ecological model, each Card can represent different ecological components—organisms, populations, communities, and so on—with their interconnectedness represented as threads between the cards.
-
-    Modeling and Simulating Neural Networks: With the Card structure, you can potentially model a neural network, where each Card can represent a neuron, and the links between them can represent the synapses. The substitute function can be used to adjust the weights of these synapses at run time.
 
 # Rel! (Generative Relational Runtime)
 
