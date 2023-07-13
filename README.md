@@ -36,9 +36,9 @@ With this architecture, semiotic interaction is not only happening within each g
 
 ---
 
-# Oxels
+# Card
 
-The Oxel class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type. This class represents a node in a graph-like data structure. Each instance of the Oxel class can store key-value pairs, where both keys and values can be other Oxel instances or any other types. This creates an intricate web of sets of iterable associations/relationships that are the key-value pairs of each Card.
+The Card class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type. This class represents a node in a graph-like data structure. Each instance of the Card class can store key-value pairs, where both keys and values can be other Card instances or any other types. This creates an intricate web of sets of iterable associations/relationships that are the key-value pairs of each Card.
 
 The Card class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
 
@@ -77,11 +77,9 @@ player.weave([
 
 For example, imagine constructing cards to symbolize all individuals populating your life-world, yourself included.
 
-You would then embark on a process of threading from the yourself to others - self.thread(relation, otherperson1, relation, otherperson2, ...etc). Yet, this weaving does not formulate a direct relationship between two individuals. Instead, the relationship is mediated, emerging from the self as the root.
+You would embark on a process of threading from yourself to others: `self.thread(relation, otherperson1, relation, otherperson2, ...etc)`. Yet, this thread does not record a direct relationship between two individuals. Instead, the relationship is mediated, emerging from the self as the root.
 
-Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. However, the relationships remain firmly tethered to the self, and are not independent of it. If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self.
-
-The structure born of this threading and weaving process is not merely a collection of relationships, but a reflection of the self's perception of these relationships.
+Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. However, the relationships remain firmly tethered to the self, and are not independent of it. If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. The structure born of this threading and weaving process is not merely a collection of relationships, but a reflection of the self's perception of these relationships. ("self" here is just an example but this applied to all cards).
 
 **hasThread:** This method can help to check if a particular thread exists within a Card, and it could be used for checking conditions in gameplay rules.
 
