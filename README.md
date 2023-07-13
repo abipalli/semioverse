@@ -20,25 +20,24 @@ Indeed for what the **movie** itself lacked in *receptivity* and *mutability* it
 
 ---
 
-**[Play! (telegram)](https://t.me/semioverse)**
+**[Play! (telegram)
+](https://t.me/semioverse)**
 
 ---
 
-**Play!** is an interface for navigating and transforming the Semioverse (a semiotic computing/programming environment). Players can connect, communicate, and engage in independent yet interoperable games. It functions as a symbol system where symbols are not just being used but continuously created and redefined.
+# Cards!
 
-Each game represents a semiotic domain, a self-contained yet interoperable universe of meaning. Here, Game and Play serve as base classes for creating, interacting with, and sharing semioverses.
+Cards are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. A Card is not just a node; it's a perspective, a point of view within a complex, semio-dimensional relational graph. It can hold any data type, even other Cards, enabling intricate and dynamic interconnections.
 
-The Play class, specifically, handles the networking aspect, joining and leaving networks, handling connections, and passing data between connected peers.
+Cards come alive with their metaphoric capabilities. Like signifiers in semiotics, Cards can be used to understand other systems or levels of abstraction, allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating this network, a Card can 'dive' into another Card, tracing the metaphoric pathways that bind them together. This mirrors human cognition, turning Cards into a playground for computational creativity. Cards are both a vessel to navigate the semioverse, as well as that which makes up its structure.
 
-This can be seen as a distributed meaning-making system, where each peer can generate, share, and interpret symbols/expressions within their own context, while also receiving and interpreting symbols/expressions from others.
-
-With this architecture, semiotic interaction is not only happening within each game but also at the network level. The system is designed to handle any expression received from another peer and pass it to all its games, a process similar to the spread of memes or ideas within a social network.
+In essence, the Card is more than a data structure. It's a semiotic game-board, a tool for modeling and navigating interconnected concepts and relationships. Whether you're building a game, exploring a social network, or constructing a semio-dimensional grammar, the Card is your key to unlocking new depths of understanding and connection. Cards effectively allow us to move beyond the literary form! Welcome to the Semioverse, where Cards are the language and the landscape!
 
 ---
 
-# Card
+# What? That sounds crazy! What do they do exactly?
 
-The Card class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type. This class represents a node in a graph-like data structure. Each instance of the Card class can store key-value pairs, where both keys and values can be other Card instances or any other types. This creates an intricate web of sets of iterable associations/relationships that are the key-value pairs of each Card.
+The Card class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where keys and values can be of any type including other Card instances. This creates an network of iterable sets of associations/relationships that are the key-value pairs of each Card.
 
 The Card class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of the Card graph.
 
@@ -73,14 +72,6 @@ player.weave([
 
 ![1688826697642](image/README/weave.png)
 
-**Interestingly the structure created by threading/weaving cards embodies the concept of perception.**
-
-For example, imagine constructing cards to symbolize all individuals populating your life-world, yourself included.
-
-You would embark on a process of threading from yourself to others: `self.thread(relation, otherperson1, relation, otherperson2, ...etc)`. Yet, this thread does not record a direct relationship between two individuals. Instead, the relationship is mediated, emerging from the self as the root.
-
-Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. However, the relationships remain firmly tethered to the self, and are not independent of it. If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. The structure born of this threading and weaving process is not merely a collection of relationships, but a reflection of the self's perception of these relationships. ("self" here is just an example but this applied to all cards).
-
 **hasThread:** This method can help to check if a particular thread exists within a Card, and it could be used for checking conditions in gameplay rules.
 
 **navigate**: This async generator method is for navigation through the Card's structure based on paths or a generator object. It respects the rule engine and follows the paths provided, keeping track of `currentCard` and `previousCard` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword "metaphor-dive", it looks ahead one path and goes deeper if possible. It yields an object containing `previousCard`, `pathTaken`, and `currentCard`.
@@ -96,6 +87,14 @@ player.navigate(scenes, roles, moves)
 What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Cards) are linked through paths (thread), creating a complex network (weave) that can be explored (navigate) and transformed (swap).
 
 *(note that in the future we want to make all methods and properties cards themselves that are woven, and use the card-based interpreter )*
+
+# Cards as perspectives
+
+**Interestingly the structure created by threading/weaving cards embodies the concept of perception.** For example, imagine constructing cards to symbolize all individuals populating your life-world, yourself included.
+
+You would embark on a process of threading from yourself to others: `self.thread(relation, otherperson1, relation, otherperson2, ...etc)`. Yet, this thread does not record a direct relationship between two individuals. **Instead, the relationship is mediated, emerging from the self as the root.**
+
+Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the relationships remain firmly tethered to the self, and are not independent of it.* If you tried to explore otherperson1.keys(), you would find that no relations have yet been formed independent of the root object, the self. **This means that every card can be considered a perspective/point of view of a relational graph.**
 
 ## Metaphor
 
@@ -133,17 +132,6 @@ Because the interpretors rule-cards are themselves card-graphs that are interpre
 
 *This section would make absurdly huge claims, and the proposed parse/fuse function is not yet satisfactorally implimented, so this section has been left out of this readme and included in this Github Issue: https://github.com/semioverse/semioverse/issues/2*
 
-# Extensions
-
-Extensions provided are factory functions to extend a Card instance with new properties and functionalities.
-
-* condTransformExtension: Provides conditional transformation capability to a card.
-* condDissassociatorExtension: Provides capability to conditionally dissociate certain keys from a card.
-* delegatorExtension: Adds delegation capabilities to a card, enabling it to delegate a method call based on certain conditions.
-* eventExtension: Adds event handling capabilities to a card, allowing it to respond to and emit events.
-* eventDelegatorExtension: Adds event delegation capabilities to a card, enabling it to delegate a method call and respond to the completion of the delegation with an event.
-* runnerExtension: This extension is intended to add execution capabilities to a Card, allowing the Card to maintain a state and execute defined delegators.
-
 ---
 
 # Meta-linguistic Assertions
@@ -152,49 +140,9 @@ Extensions provided are factory functions to extend a Card instance with new pro
 
 ---
 
-# Games
-
-**Scenario Based Programming with Cards**
-
-Every Event is a card, a monad/perspective/point of view on a card-graph. **story.**
-
-*(This is currently being pursued with FlowCards)*
-
----
-
-# Install
-
-*[!] A default Card Casting Interface is still under construction, so this installation doesnt yet present anything interesting asides from Hyperswarm networking.*
-
-In the future distributed networking will occur in the browser with no need for installation. Currently however, using hyperswarm requires us to run locally using node.
-
-For now, download the repo:
-
-In one command line window:
-
-```bash
-npm install
-cd main
-node index.js
-```
-
-In another command line window:
-
-```bash
-http-server
-```
-
-Open the browser and go to http://127.0.0.1:8080
-
-# Rel! (Generative Relational Runtime)
-
-The code in this repository is by no means the only implimentation of these concepts, we are currently exploring these concepts through a relational-programming paradigm:
-
-https://docs.google.com/document/d/1iy59rRTpHwqwyyHj7ZSTxyf4df6_yI8MwjgS1tA7zj8/edit
-
 # Contributing to this repo!
 
-**Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting computational magic!**
+**Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting semioversal magic!**
 
 ## Merge to Earn
 
