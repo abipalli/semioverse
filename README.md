@@ -20,13 +20,13 @@ Indeed for what the **movie** 🎥 itself lacked in *receptivity* and *mutabilit
 
 ---
 
-**[Play! (telegram)](https://t.me/semioverse)**[💬🎭](https://t.me/semioverse)
+**[Play! (telegram)](https://t.me/semioverse)**[ 💬🎭](https://t.me/semioverse)
 
 ---
 
 # Oxels!
 
-Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organization collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. We use the term here loosely, and while this repository only represents one branch of what Oxels are, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
+Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organization collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
 
 In the context of this program, Oxels are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Oxel is not just a node; it's a perspective, a point of view within a complex, semio-dimensional relational graph. It can hold any data type, even other Oxels, enabling intricate and dynamic interconnections.
 
@@ -64,24 +64,31 @@ player.thread(scenes, roles, moves)
 **weave 🕸️:** The weave method utilizes the thread method to weave several threads, much like weaving a tapestry.
 
 ```javascript
-player.weave([
+player.weave(
 [scenes, roles, moves]
 [scenes, roles, moves]
-[scenes, roles, moves] 
-])
+[scenes, roles, moves])
 ```
 
 ![1688826697642](image/README/weave.png)
 
 **hasThread 🧵:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
 
-**navigate 🧭:** This async generator method is for navigating through the Oxel's structure based on paths or a generator object. It respects the ` rule engine` and follows the paths provided, keeping track of `currentOxel` and `previousOxel` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword `"metaphor-dive"`, it looks ahead one path and goes deeper if possible. It yields an object containing `previousOxel`, `pathTaken`, and `currentOxel`.
+**navigate 🧭:** This async generator method is for navigating through the Oxel's structure based on paths or a generator object. It respects the `ruleEngine` and follows the paths provided, keeping track of `currentOxel` and `previousOxel` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword `"metaphor-dive"`, it looks ahead one path and goes deeper if possible. It yields an object containing `previousOxel`, `pathTaken`, and `currentOxel`.
 
 ```javascript
 player.navigate(scenes, roles, moves)
 ```
 
-**swap 🔄:** This method is used to replace a value at the given key 🔑 in a `Oxel` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller. *The significance of this and its parallels to the lambda calculus will be explored in later sections.*
+**shift 🔄:** The `shift` method is used to move a 🔑 key-value pair from one position in the Oxel graph to another. It takes two routes as input, navigates to the end of the first route, removes the key-value pair located there, then navigates to the end of the second route and inserts the removed key-value pair at that location.
+
+```javascript
+players.shift([player1, roles, chef], [player2, roles])
+```
+
+In terms of game design, the `shift` method could be used to transfer roles, objects, or other properties between different parts of the game state. For example, it could be used to move a player from one scene to another, to pass an element from one character to another, or to move something from potentiality to actuality.
+
+**swap 🔄:** This method is used to replace a value at the given key 🔑 in a `Oxel` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
 
 **snapshot 📸:** This method is used to create a snapshot of the current state of the `Oxel` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Oxel` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the *state-of-play* in order to undo moves or to provide *proofs of state* 🧩📸🔐.
 
@@ -103,15 +110,18 @@ Yet, this thread does not record a *direct* relationship between two individuals
 
 Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the constellation of relationships exists on a horizon of meaning extending from the self, and the same constellations (all else remaining constant) don't necessarily extend from the other.*
 
-If you tried to explore ` otherperson.keys()`, you would find that no relations have yet been formed on the otherperson's graph. **This means that every oxel can be considered a perspective/point of view of a relational graph.**
+If you tried to explore `otherperson.keys()`, you would find that no relations have yet been formed on the otherperson's graph. **This means that every oxel can be considered a perspective/point of view of a relational graph.**
 
-Weaving is more akin to weaving a constellation, when we draw constellations in the sky, they are always lines we draw from our point of view, but we are not actually positing that the star-oxels have light beams that connect them, and indeed other people can draw them in very different ways 🌌🔀🧩...
+Weaving is more akin to drawing constellations. When we draw constellations in the sky, they are lines we draw from our point of view, but we are not actually saying that the star-oxels *themselves* are organized by these very lines, and indeed many cultures have organized the stars into totally different constellations 🌌🔀🧩...
 
 ```javascript
-constellations.weave(star1, star2, star3, star4)
+constellations.weave(
+[star1, star2, star3, star1],
+[star6, star1, star5, star6],
+[star7, star8, star9, star2])
 ```
 
-![constellation](image/README/constellations.jpg))
+![constellation](image/README/constellations.jpg)
 
 ## Metaphor 🦉
 

@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import Card from "./card.js";
+import Oxel from "./oxel.js";
 
 export class ElementMap extends Map {
   constructor() {
@@ -34,7 +34,7 @@ export class ElementMap extends Map {
   }
 }
 
-export class InterfaceCard extends Card {
+export class InterfaceOxel extends Oxel {
   constructor(
     name,
     ruleEngine = async () => true,
@@ -47,15 +47,15 @@ export class InterfaceCard extends Card {
   ) {
     super(name, (ruleEngine = async () => true), ...args);
     this.set("layers", layers);
-    this.set("styles", new Card(styles));
-    this.set("animations", new Card(animations));
-    this.set("interactions", new Card(interactions));
-    this.set("eventHandlers", new Card(eventHandlers));
-    this.set("expressions", new Card());
+    this.set("styles", new Oxel(styles));
+    this.set("animations", new Oxel(animations));
+    this.set("interactions", new Oxel(interactions));
+    this.set("eventHandlers", new Oxel(eventHandlers));
+    this.set("expressions", new Oxel());
   }
 
-  // Delete this card
-  deleteCard() {
+  // Delete this oxel
+  deleteOxel() {
     this.get("layers").forEach((layerElement, layerName) => {
       d3.select(layerElement.node().parentNode).remove(); // Remove the SVG group
       this.get("layers").delete(layerName); // Remove the layer entry from the map
@@ -67,21 +67,21 @@ export class InterfaceCard extends Card {
     });
   }
 
-  renderCardGraph(elementMap) {
+  renderOxelGraph(elementMap) {
     this.forEach((value, key) => {
       // Create a group for each key-value pair
       const group = svg
         .append("g")
         .attr("transform", `translate(${this.x}, ${this.y})`);
 
-      // Create a rectangle for the card
+      // Create a rectangle for the oxel
       const rect = group
         .append("rect")
         .attr("width", this.width)
         .attr("height", this.height)
         .style("fill", this.color);
 
-      // Create text for the card
+      // Create text for the oxel
       const text = group
         .append("text")
         .attr("x", this.width / 2)

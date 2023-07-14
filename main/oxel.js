@@ -9,7 +9,7 @@ export default class Oxel extends Map {
     super(...args);
     this.names = new Map().set(name, new Map());
     this.values = new Map().set(value, new Map());
-    this.ruleEngine = ruleEngine; // this should be replaced by ruleOxel : flow cards
+    this.ruleEngine = ruleEngine; // this should be replaced by ruleOxel : flow oxels
     this.ruleOxels = new Map();
     this.navOxels = new Map(navOxels);
     this.positions = new Set();
@@ -29,7 +29,7 @@ export default class Oxel extends Map {
           }
 
           return function (...args) {
-            // Bind this to the original card and call the method
+            // Bind this to the original oxel and call the method
             return target[prop].apply(target, args);
           };
         }
@@ -123,33 +123,33 @@ export default class Oxel extends Map {
     if (!(await this.checkRule(this, "thread", paths))) {
       throw new Error(`Call to thread is not allowed`);
     }
-    let card = this;
-    let initcard = card;
+    let oxel = this;
+    let initoxel = oxel;
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
-          card.set(path, new Oxel());
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (!oxel.has(path)) {
+          oxel.set(path, new Oxel());
         }
-        card = card.get(path);
+        oxel = oxel.get(path);
       } else {
         throw new Error("map is not instanceof Map or Oxel");
         // break
       }
     }
-    return initcard;
+    return initoxel;
   }
 
   async hasThread(...paths) {
     if (!(await this.checkRule(this, "hasThread", paths))) {
       throw new Error(`Call to hasThread is not allowed`);
     }
-    let card = this;
+    let oxel = this;
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (!oxel.has(path)) {
           return false;
         }
-        card = card.get(path);
+        oxel = oxel.get(path);
       } else {
         throw new Error("map is not instanceof Map or Oxel");
       }
@@ -182,7 +182,7 @@ export default class Oxel extends Map {
       if (!done) {
         if (path === "metaphor-dive") {
           // as a reserved keyword we must make sure that it cant be used as a key elsewhere
-          // possibly make the metaphor dive itself a card
+          // possibly make the metaphor dive itself a oxel
           const peek = pathsIterator.next();
           if (!peek.done && currentOxel.has(peek.value)) {
             const nextPath = peek.value;

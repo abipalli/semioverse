@@ -1,8 +1,8 @@
-import Card from "./card.js";
+import Oxel from "./oxel.js";
 
 function condTransformExtension(card, source, target, mapping, rules) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
   card.transforms = new Set();
@@ -11,11 +11,11 @@ function condTransformExtension(card, source, target, mapping, rules) {
     if (!(await this.checkRule(this, "transform"))) {
       throw new Error(`Call to transform is not allowed`);
     }
-    const transformedCards = [];
+    const transformedOxels = [];
     for (const transform of this.transforms) {
-      transformedCards.push(transform.get("applyTo")(this));
+      transformedOxels.push(transform.get("applyTo")(this));
     }
-    return transformedCards;
+    return transformedOxels;
   };
 
   // Add new properties to card
@@ -35,14 +35,14 @@ function condTransformExtension(card, source, target, mapping, rules) {
     const commonKeys = [...card.keys()].filter((key) => source.has(key));
 
     if (commonKeys.length > 0) {
-      const newCard = new Card(target);
+      const newOxel = new Oxel(target);
       for (const key of commonKeys) {
         const transformedKey = mapping.get(key);
         if (transformedKey && (!rules || rules.get(key))) {
-          newCard.set(transformedKey, card.get(key));
+          newOxel.set(transformedKey, card.get(key));
         }
       }
-      return newCard;
+      return newOxel;
     }
   });
 
@@ -50,8 +50,8 @@ function condTransformExtension(card, source, target, mapping, rules) {
 }
 
 function condDissAssociatorExtension(card, source, rules) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
   card.transforms = new Set();
@@ -60,11 +60,11 @@ function condDissAssociatorExtension(card, source, rules) {
     if (!(await this.checkRule(this, "transform"))) {
       throw new Error(`Call to transform is not allowed`);
     }
-    const transformedCards = [];
+    const transformedOxels = [];
     for (const transform of this.transforms) {
-      transformedCards.push(transform.get("applyTo")(this));
+      transformedOxels.push(transform.get("applyTo")(this));
     }
-    return transformedCards;
+    return transformedOxels;
   };
 
   // Add new properties to card
@@ -79,13 +79,13 @@ function condDissAssociatorExtension(card, source, rules) {
     const commonKeys = [...card.keys()].filter((key) => source.has(key));
 
     if (commonKeys.length > 0) {
-      const newCard = new Card(card.name);
+      const newOxel = new Oxel(card.name);
       for (const key of commonKeys) {
         if (!rules || !rules.get(key)) {
-          newCard.set(key, card.get(key));
+          newOxel.set(key, card.get(key));
         }
       }
-      return newCard;
+      return newOxel;
     }
   });
 
@@ -99,8 +99,8 @@ function delegatorExtension(
   loopCondition,
   ...args
 ) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
   // Add new properties to card
@@ -113,8 +113,8 @@ function delegatorExtension(
 }
 
 function eventExtension(card) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
   // Add new "events" field to card
@@ -145,11 +145,11 @@ function eventDelegatorExtension(
   methodName,
   conditional,
   loopCondition,
-  eventCard,
+  eventOxel,
   ...args
 ) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
   // Add new properties to card
@@ -160,7 +160,7 @@ function eventDelegatorExtension(
     loopCondition,
     ...args
   );
-  card.set("eventCard", eventCard);
+  card.set("eventOxel", eventOxel);
 
   // Store original delegate method, if it exists
   const originalDelegate = card.get("delegate") || (() => {});
@@ -168,12 +168,12 @@ function eventDelegatorExtension(
   // Override delegate method
   card.set("delegate", async (...args) => {
     const methodName = card.get("methodName");
-    const eventCard = card.get("eventCard");
+    const eventOxel = card.get("eventOxel");
 
-    if (eventCard instanceof EventCard) {
-      eventCard.on(methodName, async () => {
+    if (eventOxel instanceof EventOxel) {
+      eventOxel.on(methodName, async () => {
         const result = await originalDelegate.call(card, ...args);
-        eventCard.emit(`${methodName}:completed`, result);
+        eventOxel.emit(`${methodName}:completed`, result);
       });
     } else {
       return originalDelegate.call(card, ...args);
@@ -184,12 +184,12 @@ function eventDelegatorExtension(
 }
 
 function runnerExtension(card) {
-  if (!(card instanceof Card)) {
-    throw new Error("Argument is not an instance of Card");
+  if (!(card instanceof Oxel)) {
+    throw new Error("Argument is not an instance of Oxel");
   }
 
-  card.set("state", new Card());
-  card.set("delegators", new Card());
+  card.set("state", new Oxel());
+  card.set("delegators", new Oxel());
 
   card.set("addDelegator", (delegator) => {
     if (!delegator.has("delegate")) {
