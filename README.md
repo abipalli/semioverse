@@ -2,7 +2,7 @@
 
 **Play!** is a new media, it's an **interfacing interface 🎛️🔁🎛️**.
 
-**Music** 🎵 has at its disposal duration of time ⏳.
+**Music** 🎵 has at its disposal duration of time ⏳.// recognition is always recognition of a schema through which to interpret the the thread with the oxel interpretor.
 
 **Painting** 🎨 can present to the viewer the whole content of its message at one moment 🖼️.
 
@@ -26,11 +26,11 @@ Indeed for what the **movie** 🎥 itself lacked in *receptivity* and *mutabilit
 
 # Oxels!
 
-Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organization collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
+Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organizations collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
 
-In the context of this program, Oxels are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Oxel is not just a node; it's a perspective, a point of view within a complex, semio-dimensional relational graph. It can hold any data type, even other Oxels, enabling intricate and dynamic interconnections.
+In the context of this program, Oxels are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Oxel is not just a node; it's a perspective, a point of view within a semio-dimensional relational graph. It can hold any data type, even other Oxels, enabling intricate and dynamic interconnections.
 
-Oxels come alive with their metaphoric capabilities allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating this network, an Oxel can 'dive' into another Oxel, tracing the metaphoric pathways that bind them together. This mirrors human cognition, turning Oxels into a playground for computational creativity. Oxels are both a vessel to navigate the semioverse, as well as that which makes up its structure 🚢🧩🌐.
+Oxels come alive with their metaphoric capabilities allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating this network, an Oxel can trace the metaphoric pathways that bind it. This mirrors human cognition, turning Oxels into a playground for computational creativity. Oxels are both a vessel to navigate the semioverse, as well as that which makes up its structure 🚢🧩🌐.
 
 Oxels are more than a data structure. They're a semiotic game element, a tool for modeling and navigating interconnected and unfolding concepts and relationships. Whether you're crafting a game, exploring a social network, or constructing a semio-dimensional grammar, the Oxel is your key 🔑 to unlocking new depths of understanding and connection. Oxels effectively allow us to move beyond the linearity of the literary form itself! Welcome to the Semioverse, where Oxels are the language and the landscape!
 
@@ -92,7 +92,7 @@ In terms of game design, the `shift` method could be used to transfer roles, obj
 
 **snapshot 📸:** This method is used to create a snapshot of the current state of the `Oxel` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Oxel` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the *state-of-play* in order to undo moves or to provide *proofs of state* 🧩📸🔐.
 
-What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Oxels) are linked through paths (thread 🧵), creating a complex network (weave 🕸️) that can be explored (navigate 🧭) and transformed (swap 🔄).
+What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Oxels) are linked through paths (thread 🧵), creating a network (weave 🕸️) that can be explored (navigate 🧭) and transformed (shift/swap 🔄).
 
 *(note that in the future we want to make all methods and properties oxels themselves that are woven, and use the oxel-based interpreter)*
 
@@ -110,7 +110,7 @@ Yet, this thread does not record a *direct* relationship between two individuals
 
 Within the self's graph, you can discern the relationships between yourself and others, as well as the relationships amongst others. *However, the constellation of relationships exists on a horizon of meaning extending from the self, and the same constellations (all else remaining constant) don't necessarily extend from the other.*
 
-If you tried to explore `otherperson.keys()`, you would find that no relations have yet been formed on the otherperson's graph. **This means that every oxel can be considered a perspective/point of view of a relational graph.** 
+If you tried to explore `otherperson.keys()`, you would find that no relations have yet been formed on the otherperson's graph. **This means that every oxel can be considered a perspective/point of view of a relational graph.**
 
 *(every oxel is a master-signifier that organizes a constellation of meaning)*
 
