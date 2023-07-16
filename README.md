@@ -2,7 +2,7 @@
 
 **Play!** is a new media, it's an **interfacing interface 🎛️🔁🎛️**.
 
-**Music** 🎵 has at its disposal duration of time ⏳.// recognition is always recognition of a schema through which to interpret the the thread with the oxel interpretor.
+**Music** 🎵 has at its disposal duration of time ⏳.
 
 **Painting** 🎨 can present to the viewer the whole content of its message at one moment 🖼️.
 
