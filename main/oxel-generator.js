@@ -3,28 +3,22 @@ export default class Oxel extends Map {
     name,
     value,
     ruleEngine = async () => true,
-    rules = Oxel,
-    //rootFlow = function* () {
-    //  yield request(new Event("hi"));
-    //  while (true) {}
-    //},
+    ruleOxels = Oxel,
     ...args
   ) {
     super(...args);
-    //this.names = new Map().set(name, new Map());
-    this.name = name;
+    this.names = new Map().set(name, new Map());
     this.values = new Map().set(value, new Map());
-    this.ruleEngine = ruleEngine; // this should be replaced by ruleOxel : flow cards
-    this.rules = rules;
-    //this.Scheduler = new Scheduler({ rootFlow });
-    this.navOxels = new Set();
+    this.ruleEngine = ruleEngine; // this should be replaced by ruleOxel : flow oxels
+    this.ruleOxels = new Map();
+    this.navOxels = new Map(navOxels);
     this.positions = new Set();
     this.expressions = new Map();
     this.terminals = new Map(); // this is for interpretation
     this.fusable = true; // this is like whether it can be parsed using the ky
-    //this.story = []; // this is the event-trace
-    //this.messages = []; // event-queue
-    //this.lastEvent = undefined;
+    this.story = []; // this is the event-trace
+    this.messages = []; // event-queue
+    this.lastEvent = undefined;
 
     return new Proxy(this, {
       get: (target, prop, receiver) => {
@@ -129,35 +123,35 @@ export default class Oxel extends Map {
     if (!(await this.checkRule(this, "thread", paths))) {
       throw new Error(`Call to thread is not allowed`);
     }
-    let card = this;
-    let initcard = card;
+    let oxel = this;
+    let initoxel = oxel;
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
-          card.set(path, new Oxel());
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (!oxel.has(path)) {
+          oxel.set(path, new Oxel());
         }
-        card = card.get(path);
+        oxel = oxel.get(path);
       } else {
-        console.log("map is not instanceof Map or Oxel");
+        throw new Error("map is not instanceof Map or Oxel");
         // break
       }
     }
-    return initcard;
+    return initoxel;
   }
 
   async hasThread(...paths) {
     if (!(await this.checkRule(this, "hasThread", paths))) {
       throw new Error(`Call to hasThread is not allowed`);
     }
-    let card = this;
+    let oxel = this;
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (!oxel.has(path)) {
           return false;
         }
-        card = card.get(path);
+        oxel = oxel.get(path);
       } else {
-        console.log("map is not instanceof Map or Oxel");
+        throw new Error("map is not instanceof Map or Oxel");
       }
     }
     return true;
@@ -289,71 +283,101 @@ export default class Oxel extends Map {
       }
     }
   }
-  async shift(sourceRoute, destinationRoute, keys) {
-    if (
-      !(await this.checkRule(this, "shift", [
-        sourceRoute,
-        destinationRoute,
-        keys,
-      ]))
-    ) {
-      throw new Error(`Call to shift is not allowed`);
+
+  async *swap(key, value, ...routes) {
+    if (!(await this.checkRule(this, "swap", [key, value, ...routes]))) {
+      throw new Error(`Call to swap is not allowed`);
     }
 
-    // Navigate to the source route and save the entries to be shifted
-    const sourceNavigationResult = await this.navigate(sourceRoute);
-    if (sourceNavigationResult.currentOxel) {
-      const entriesToShift = keys.map((key) => [
-        key,
-        sourceNavigationResult.currentOxel.get(key),
-      ]);
+    for await (const route of routes) {
+      const routeIterator =
+        Symbol.iterator in route ? route[Symbol.iterator]() : route;
 
-      // Navigate to the destination route
-      const destinationNavigationResult = await this.navigate(destinationRoute);
-      if (destinationNavigationResult.currentOxel) {
-        // Insert the entries to be shifted into the destination oxel
-        for (let [key, value] of entriesToShift) {
-          destinationNavigationResult.currentOxel.set(key, value);
+      let iterator = this.navigate(routeIterator);
+      let result = await iterator.next();
+      let originalKey;
+      while (!result.done) {
+        let nextResult = await iterator.next();
+        if (nextResult.done) {
+          originalKey = result.value.pathTaken;
+          if (
+            result.value.previousOxel &&
+            result.value.previousOxel.has(originalKey)
+          ) {
+            // Save the original value before overwriting
+            const originalValue = result.value.previousOxel.get(originalKey);
+            // Overwrite the original entry with the new key-value pair
+            result.value.previousOxel.delete(originalKey);
+            result.value.previousOxel.set(key, value);
+            // Yield the removed entry
+            yield { key: originalKey, value: originalValue };
+          }
         }
-
-        // Delete the shifted entries from the source oxel
-        for (let key of keys) {
-          sourceNavigationResult.currentOxel.delete(key);
-        }
+        result = nextResult;
       }
     }
   }
 
-  async swap(key, value, route) {
-    if (!(await this.checkRule(this, "swap", [key, value, route]))) {
-      throw new Error(`Call to swap is not allowed`);
+  async fuse() {
+    // this method does a rudimentary parsing by using the key-graph as a schema to label the value-graph
+    let fused = new Oxel();
+
+    for (let [key, value] of this.entries()) {
+      let keyIterator = (async function* () {
+        if (key instanceof Map || (key instanceof Oxel && key.fusable)) {
+          for (let [k, v] of key.entries()) {
+            yield { key: k, value: v };
+          }
+        } else {
+          yield { key: key, value: value };
+        }
+      })();
+
+      let valueIterator = (async function* () {
+        if (value instanceof Map || (value instanceof Oxel && value.fusable)) {
+          for (let [k, v] of value.entries()) {
+            yield { key: k, value: v };
+          }
+        } else {
+          yield { key: key, value: value };
+        }
+      })();
+
+      for await (let keyEntry of keyIterator) {
+        let valueEntry = await valueIterator.next();
+        if (!valueEntry.done) {
+          fused.set(
+            [keyEntry.key, valueEntry.value.key],
+            [keyEntry.value, valueEntry.value.value]
+          );
+        }
+      }
     }
 
-    const navigationResult = await this.navigate(route);
-
-    if (
-      navigationResult.previousOxel &&
-      navigationResult.previousOxel.has(navigationResult.pathTaken)
-    ) {
-      // Save the original value before overwriting
-      const originalValue = navigationResult.previousOxel.get(
-        navigationResult.pathTaken
-      );
-
-      // Overwrite the original entry with the new key-value pair
-      navigationResult.previousOxel.delete(navigationResult.pathTaken);
-      navigationResult.previousOxel.set(key, value);
-
-      // Return the original entry
-      return {
-        key: navigationResult.pathTaken,
-        value: originalValue,
-      };
-    }
-
-    // If the navigation failed, return null
-    return null;
+    return fused;
   }
+
+  async *interpret() {
+    let oxel = await this.fuse();
+    // If this oxel is a terminal, get the corresponding interpretation
+    if (terminals.has(oxel)) {
+      const interpretation = terminals.get(oxel);
+      // Yield the interpretatino
+      yield interpretation;
+    }
+  }
+
+  async *composeInterpreters() {
+    for await (let [key, value] of this.entries()) {
+      if (key instanceof Oxel && value instanceof Oxel) {
+        yield* this.interpret();
+      } else {
+        yield { key: key, value: value };
+      }
+    }
+  }
+
+  // Taking a snapshot of the state-play
 
   async snapshot(depth) {
     if (!(await this.checkRule(this, "snapshot", [depth]))) {
@@ -456,10 +480,10 @@ export default class Oxel extends Map {
 
     return copy;
   }
-
   async checkRule(target, prop, value = null) {
     return await this.ruleEngine(target, prop, value);
   }
+
   [Symbol.asyncIterator]() {
     const entries = this.entries();
     return {
@@ -473,29 +497,3 @@ export default class Oxel extends Map {
     };
   }
 }
-
-const roles = new Oxel("roles");
-const players = new Oxel("players");
-
-const player1 = new Oxel("🧙 player1");
-const player2 = new Oxel("🕺 player2");
-const player3 = new Oxel("💃 player3");
-const player4 = new Oxel("🧞‍♀️ player4");
-
-// Roles
-const chef = new Oxel("👨‍🍳 Chef");
-const cleaner = new Oxel("🫧 Cleaner");
-const gardener = new Oxel("🌱 Gardener");
-
-// pathTaken is strange during navigation
-player1.set("Phone Number", "+33777867213");
-player2.set("Phone Number", "+33309555123");
-player3.set("Phone Number", "+33567268013");
-
-await players.weave(
-  [player1, roles, chef],
-  [player2, roles, cleaner],
-  [player3, roles, gardener]
-);
-
-console.log(players.get(player2).get(roles));

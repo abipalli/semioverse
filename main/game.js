@@ -1,12 +1,57 @@
 import Oxel from "./oxel.js";
 
-export default class Game extends Oxel {
+const isEmpty = function (arr) {
+  return arr.length == 0;
+};
+
+const notEmpty = function (arr) {
+  return arr.length > 0;
+};
+
+function compareBids(a, b) {
+  return a.priority - b.priority;
+}
+
+class EventDictionary extends Map {
+  constructor(...args) {
+    super(args);
+  }
+
+  addEventReference(eventType, narrativeRef) {
+    if (!this.has(eventType)) {
+      this.set(eventType, []);
+    }
+    this.get(eventType).push(narrativeRef);
+  }
+
+  getNarrativesForEvent(eventType) {
+    return this.get(eventType) || [];
+  }
+
+  removeEventReference(eventType, narrativeRef) {
+    if (this.has(eventType)) {
+      const refs = this.get(eventType);
+      const index = refs.indexOf(narrativeRef);
+      if (index !== -1) {
+        refs.splice(index, 1);
+        if (refs.length === 0) {
+          this.delete(eventType);
+        }
+      }
+    }
+  }
+
+  clearEventReferences() {
+    this.clear();
+  }
+}
+
+class Game extends Oxel {
   constructor(...args) {
     super(args);
     this._messages = [];
     this._games = [];
     this._story = [];
-    //this._expressions = new Set();
     this._running = [];
     this._pending = [];
     this._lastEvent = undefined;
@@ -102,11 +147,6 @@ export default class Game extends Oxel {
   async addNarrative(name, prio, fun) {
     var bound = fun.bind({
       lastEvent: () => this.lastEvent,
-      thread: async (...paths) => this.thread(...paths),
-      weave: async (...threads) => this.weave(...threads),
-      navigate: async (pathsOrGenerator) => this.navigate(pathsOrGenerator), // THIS IS A GENERATOR
-      replace: async (substitute, destinationkey, ...routes) =>
-        this.replace(substitute, destinationkey, ...routes), // THIS IS A GENERATOR
       express: async (...threads) => this.express(...threads),
       // this allows narratives to access the story, the expressions, and express function, thread, weave
       expressions: new Set(),
@@ -341,3 +381,5 @@ export default class Game extends Oxel {
 
   // It would be useful to have an extractEventTypesFromNarrative(narrative)
 }
+
+export default Game;

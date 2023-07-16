@@ -1,61 +1,61 @@
-import Card from "./card.js";
+import Oxel from "./oxel.js";
 
 // Does this mantain the proxy?
 
-function cardToJSON(card) {
+function oxelToJSON(oxel) {
   // Convert the Map to an array of key-value pairs
-  const mapData = Array.from(card.entries()).map(([key, value]) => {
-    if (value instanceof Map || value instanceof Card) {
-      return [key, cardToJSON(value)];
+  const mapData = Array.from(oxel.entries()).map(([key, value]) => {
+    if (value instanceof Map || value instanceof Oxel) {
+      return [key, oxelToJSON(value)];
     } else {
       return [key, value];
     }
   });
 
   return {
-    __type__: "Card",
-    name: card.name,
-    positions: Array.from(card.positions),
-    transforms: Array.from(card.transforms),
-    expressions: Array.from(card.expressions),
-    ruleEngine: `async function ruleEngine${card.ruleEngine
+    __type__: "Oxel",
+    name: oxel.name,
+    positions: Array.from(oxel.positions),
+    transforms: Array.from(oxel.transforms),
+    expressions: Array.from(oxel.expressions),
+    ruleEngine: `async function ruleEngine${oxel.ruleEngine
       .toString()
       .slice("function".length)}`,
     mapData,
   };
 }
 
-function cardFromJSON(json) {
-  // Create a new Card through the factory to ensure it has a proxy
-  let card = new Card(
+function oxelFromJSON(json) {
+  // Create a new Oxel through the factory to ensure it has a proxy
+  let oxel = new Oxel(
     json.name,
     eval(`(function() { return ${json.ruleEngine}; })()`)
   );
 
-  json.positions.forEach((pos) => card.positions.add(pos));
-  json.transforms.forEach((trans) => card.transforms.add(trans));
-  json.expressions.forEach((expr) => card.expressions.add(expr));
+  json.positions.forEach((pos) => oxel.positions.add(pos));
+  json.transforms.forEach((trans) => oxel.transforms.add(trans));
+  json.expressions.forEach((expr) => oxel.expressions.add(expr));
 
   // Populate the Map from the array of key-value pairs
   json.mapData.forEach(([key, value]) => {
-    if (value && value.__type__ === "Card") {
-      card.set(key, cardFromJSON(value)); // Recursively restore Card instances
+    if (value && value.__type__ === "Oxel") {
+      oxel.set(key, oxelFromJSON(value)); // Recursively restore Oxel instances
     } else {
-      card.set(key, value);
+      oxel.set(key, value);
     }
   });
 
-  return card;
+  return oxel;
 }
 
-const card = new Card("testCard");
-console.log("Card: ", card);
+const oxel = new Oxel("testOxel");
+console.log("Oxel: ", oxel);
 
-const serializedCard = JSOG.stringify(cardToJSON(card));
-console.log("Serialized Card: ", serializedCard);
+const serializedOxel = JSOG.stringify(oxelToJSON(oxel));
+console.log("Serialized Oxel: ", serializedOxel);
 
-console.log("Thread: ", await card.thread(card));
+console.log("Thread: ", await oxel.thread(oxel));
 
-const deserializedData = JSOG.parse(serializedCard);
-const restoredCard = cardFromJSON(deserializedData);
-console.log("Restored Card: ", restoredCard);
+const deserializedData = JSOG.parse(serializedOxel);
+const restoredOxel = oxelFromJSON(deserializedData);
+console.log("Restored Oxel: ", restoredOxel);

@@ -13,6 +13,7 @@
         "hyperswarm": "hyperswarm-web"
     },
     "dependencies": {
+        "@flowcards/core": "^13.1.1",
         "d3": "^7.8.4",
         "d3-render": "^0.3.0",
         "d3-selection": "^3.0.0",
@@ -25,6 +26,7 @@
         "jsdom": "^22.1.0",
         "jsog": "^1.0.7",
         "mississippi": "^4.0.0",
+        "node-schedule": "^2.1.1",
         "object-hash": "^3.0.0",
         "ramo": "^0.1.2",
         "socket.io": "^4.7.0",
