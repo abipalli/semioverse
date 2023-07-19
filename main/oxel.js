@@ -4,10 +4,6 @@ export default class Oxel extends Map {
     value,
     ruleEngine = async () => true,
     rules = Oxel,
-    //rootFlow = function* () {
-    //  yield request(new Event("hi"));
-    //  while (true) {}
-    //},
     ...args
   ) {
     super(...args);
@@ -16,22 +12,18 @@ export default class Oxel extends Map {
     this.values = new Map().set(value, new Map());
     this.ruleEngine = ruleEngine; // this should be replaced by ruleOxel : flow cards
     this.rules = rules;
-    //this.Scheduler = new Scheduler({ rootFlow });
     this.navOxels = new Set();
     this.positions = new Set();
     this.expressions = new Map();
     this.terminals = new Map(); // this is for interpretation
-    this.fusable = true; // this is like whether it can be parsed using the ky
-    //this.story = []; // this is the event-trace
-    //this.messages = []; // event-queue
-    //this.lastEvent = undefined;
+    this.fusable = true; // this is like whether it can be parsed using the key
 
     return new Proxy(this, {
       get: (target, prop, receiver) => {
         if (typeof target[prop] === "function") {
           // If it's a method from the Map prototype
           if (!target.checkRule(target, prop)) {
-            throw new Error(`Access to ${prop} is not allowed`);
+            console.log(`Access to ${prop} is not allowed`);
           }
 
           return function (...args) {
@@ -41,121 +33,141 @@ export default class Oxel extends Map {
         }
 
         if (!target.checkRule(target, prop)) {
-          throw new Error(`Access to ${prop} is not allowed`);
+          console.log(`Access to ${prop} is not allowed`);
         }
 
         return Reflect.get(target, prop, receiver);
       },
       set: (target, prop, value, receiver) => {
         if (!target.checkRule(target, prop, value)) {
-          throw new Error(`Modification of ${prop} is not allowed`);
+          console.log(`Modification of ${prop} is not allowed`);
         }
         return Reflect.set(target, prop, value, receiver);
       },
       has: (target, prop) => {
         if (!target.checkRule(target, prop)) {
-          throw new Error(`Access to ${prop} is not allowed`);
+          console.log(`Access to ${prop} is not allowed`);
         }
         return Reflect.has(target, prop);
       },
       deleteProperty: (target, prop) => {
         if (!target.checkRule(target, prop)) {
-          throw new Error(`Modification of ${prop} is not allowed`);
+          console.log(`Modification of ${prop} is not allowed`);
         }
         return Reflect.deleteProperty(target, prop);
       },
       defineProperty: (target, prop, descriptor) => {
         if (!target.checkRule(target, prop)) {
-          throw new Error(`Modification of ${prop} is not allowed`);
+          console.log(`Modification of ${prop} is not allowed`);
         }
         return Reflect.defineProperty(target, prop, descriptor);
       },
       ownKeys: (target) => {
         if (!target.checkRule(target, "ownKeys")) {
-          throw new Error("Access to ownKeys is not allowed");
+          console.log("Access to ownKeys is not allowed");
         }
         return Reflect.ownKeys(target);
       },
       getOwnPropertyDescriptor: (target, prop) => {
         if (!target.checkRule(target, prop)) {
-          throw new Error(`Access to ${prop} is not allowed`);
+          console.log(`Access to ${prop} is not allowed`);
         }
         return Reflect.getOwnPropertyDescriptor(target, prop);
       },
       getPrototypeOf: (target) => {
         if (!target.checkRule(target, "getPrototypeOf")) {
-          throw new Error("Access to prototype is not allowed");
+          console.log("Access to prototype is not allowed");
         }
         return Reflect.getPrototypeOf(target);
       },
       setPrototypeOf: (target, proto) => {
         if (!target.checkRule(target, "setPrototypeOf")) {
-          throw new Error("Setting prototype is not allowed");
+          console.log("Setting prototype is not allowed");
         }
         return Reflect.setPrototypeOf(target, proto);
       },
       isExtensible: (target) => {
         if (!target.checkRule(target, "isExtensible")) {
-          throw new Error("Checking extensibility is not allowed");
+          console.log("Checking extensibility is not allowed");
         }
         return Reflect.isExtensible(target);
       },
       preventExtensions: (target) => {
         if (!target.checkRule(target, "preventExtensions")) {
-          throw new Error("Preventing extensions is not allowed");
+          console.log("Preventing extensions is not allowed");
         }
         return Reflect.preventExtensions(target);
       },
       // Note: apply and construct traps are for function objects, and may not be applicable to the Card class, although they may be applicable to narrative generator.
       apply: (target, thisArg, args) => {
         if (!target.checkRule(target, "apply", args)) {
-          throw new Error("Applying is not allowed");
+          console.log("Applying is not allowed");
         }
         return Reflect.apply(target, thisArg, args);
       },
       construct: (target, args) => {
         if (!target.checkRule(target, "construct", args)) {
-          throw new Error("Construction is not allowed");
+          console.log("Construction is not allowed");
         }
         return Reflect.construct(target, args);
       },
     });
   }
 
-  // We will want to add these methods into the map itself
-
+  //We should handle key-dives as well as backtracking navigation operations
   async thread(...paths) {
-    //We should handle key-dives as well as backtracking navigation operations
     if (!(await this.checkRule(this, "thread", paths))) {
-      throw new Error(`Call to thread is not allowed`);
+      console.log(`Call to thread is not allowed`);
     }
-    let card = this;
-    let initcard = card;
+    let oxel = this;
+    const story = []; //so that backtracking is possible
+
+    // this key-dive isnt functioning properly
+    const pathsIterator =
+      Symbol.iterator in paths ? paths[Symbol.iterator]() : paths;
+
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
-          card.set(path, new Oxel());
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (path === "key-dive") {
+          // this key-dive isnt functioning properly
+          const peek = pathsIterator.next();
+          //console.log("HIHIHI", peek.value);
+          if (!peek.done && oxel.has(peek.value)) {
+            oxel = peek.value;
+          }
         }
-        card = card.get(path);
+        if (!oxel.has(path)) {
+          oxel.set(path, new Oxel("Ambiguity")); // should be "undefined" but "ambiguity" is nicer to read
+        }
+        oxel = oxel.get(path);
+        story.push(path);
       } else {
         console.log("map is not instanceof Map or Oxel");
         // break
       }
     }
-    return initcard;
+    return this;
+  }
+
+  async weave(...threads) {
+    if (!(await this.checkRule(this, "weave", threads))) {
+      console.log(`Call to weave is not allowed`);
+    }
+    for (const thread of threads) {
+      await this.thread(...thread);
+    }
+    return this;
   }
 
   async hasThread(...paths) {
-    if (!(await this.checkRule(this, "hasThread", paths))) {
-      throw new Error(`Call to hasThread is not allowed`);
-    }
-    let card = this;
+    let oxel = this;
+    // we should then also add key-dive functionality here
     for await (const path of paths) {
-      if (card instanceof Map || card instanceof Oxel) {
-        if (!card.has(path)) {
+      if (oxel instanceof Map || oxel instanceof Oxel) {
+        if (!oxel.has(path)) {
           return false;
         }
-        card = card.get(path);
+        oxel = oxel.get(path);
       } else {
         console.log("map is not instanceof Map or Oxel");
       }
@@ -163,19 +175,19 @@ export default class Oxel extends Map {
     return true;
   }
 
-  async weave(...threads) {
-    if (!(await this.checkRule(this, "weave", threads))) {
-      throw new Error(`Call to weave is not allowed`);
+  async hasWeave(...threads) {
+    for await (const thread of threads) {
+      if (!(await this.hasThread(...thread))) {
+        return false;
+      }
     }
-    for (const thread of threads) {
-      await this.thread(...thread);
-    }
+    return true;
   }
 
   // This accepts an array of paths
   async navigate(pathsOrGenerator) {
     if (!(await this.checkRule(this, "navigate", pathsOrGenerator))) {
-      throw new Error(`Call to navigate is not allowed`);
+      console.log(`Call to navigate is not allowed`);
     }
     let currentOxel = this;
     let previousOxel = null;
@@ -225,91 +237,29 @@ export default class Oxel extends Map {
     };
   }
 
-  async swap(key, value, route) {
-    if (!(await this.checkRule(this, "swap", [key, value, route]))) {
-      throw new Error(`Call to swap is not allowed`);
+  async shift(sourceThread, destinationThread, keys) {
+    if (
+      !(await this.checkRule(this, "shift", [
+        sourceThread,
+        destinationThread,
+        keys,
+      ]))
+    ) {
+      console.log(`Call to shift is not allowed`);
     }
 
-    const navigationResult = await this.navigate(route);
+    // Navigate to the source thread and save the entries to be shifted
+    const sourceNavigationResult = await this.navigate(sourceThread);
+    if (sourceNavigationResult.currentOxel) {
+      const entriesToShift = keys.map((key) => [
+        key,
+        sourceNavigationResult.currentOxel.get(key),
+      ]);
 
-    if (
-      navigationResult.previousOxel &&
-      navigationResult.previousOxel.has(navigationResult.pathTaken)
-    ) {
-      // Save the original value before overwriting
-      const originalValue = navigationResult.previousOxel.get(
-        navigationResult.pathTaken
+      // Navigate to the destination thread
+      const destinationNavigationResult = await this.navigate(
+        destinationThread
       );
-
-      // Overwrite the original entry with the new key-value pair
-      navigationResult.previousOxel.delete(navigationResult.pathTaken);
-      navigationResult.previousOxel.set(key, value);
-
-      // Return the original entry
-      return {
-        key: navigationResult.pathTaken,
-        value: originalValue,
-      };
-    }
-
-    // If the navigation failed, return null
-    return null;
-  }
-  async shift(sourceRoute, destinationRoute, keys) {
-    if (
-      !(await this.checkRule(this, "shift", [
-        sourceRoute,
-        destinationRoute,
-        keys,
-      ]))
-    ) {
-      throw new Error(`Call to shift is not allowed`);
-    }
-
-    // Navigate to the source route and save the entries to be shifted
-    const sourceNavigationResult = await this.navigate(sourceRoute);
-    if (sourceNavigationResult.currentOxel) {
-      const entriesToShift = keys.map((key) => [
-        key,
-        sourceNavigationResult.currentOxel.get(key),
-      ]);
-
-      // Navigate to the destination route
-      const destinationNavigationResult = await this.navigate(destinationRoute);
-      if (destinationNavigationResult.currentOxel) {
-        // Insert the entries to be shifted into the destination oxel
-        for (let [key, value] of entriesToShift) {
-          destinationNavigationResult.currentOxel.set(key, value);
-        }
-
-        // Delete the shifted entries from the source oxel
-        for (let key of keys) {
-          sourceNavigationResult.currentOxel.delete(key);
-        }
-      }
-    }
-  }
-  async shift(sourceRoute, destinationRoute, keys) {
-    if (
-      !(await this.checkRule(this, "shift", [
-        sourceRoute,
-        destinationRoute,
-        keys,
-      ]))
-    ) {
-      throw new Error(`Call to shift is not allowed`);
-    }
-
-    // Navigate to the source route and save the entries to be shifted
-    const sourceNavigationResult = await this.navigate(sourceRoute);
-    if (sourceNavigationResult.currentOxel) {
-      const entriesToShift = keys.map((key) => [
-        key,
-        sourceNavigationResult.currentOxel.get(key),
-      ]);
-
-      // Navigate to the destination route
-      const destinationNavigationResult = await this.navigate(destinationRoute);
       if (destinationNavigationResult.currentOxel) {
         // Insert the entries to be shifted into the destination oxel
         for (let [key, value] of entriesToShift) {
@@ -324,12 +274,12 @@ export default class Oxel extends Map {
     }
   }
 
-  async swap(key, value, route) {
-    if (!(await this.checkRule(this, "swap", [key, value, route]))) {
-      throw new Error(`Call to swap is not allowed`);
+  async swap(thread, key, value) {
+    if (!(await this.checkRule(this, "swap", [thread, key, value]))) {
+      console.log(`Call to swap is not allowed`);
     }
 
-    const navigationResult = await this.navigate(route);
+    const navigationResult = await this.navigate(thread);
 
     if (
       navigationResult.previousOxel &&
@@ -357,7 +307,7 @@ export default class Oxel extends Map {
 
   async snapshot(depth) {
     if (!(await this.checkRule(this, "snapshot", [depth]))) {
-      throw new Error(`Call to snapshot is not allowed`);
+      console.log(`Call to snapshot is not allowed`);
     }
 
     const hardened = new WeakSet();
@@ -419,7 +369,7 @@ export default class Oxel extends Map {
       const destination = new Card();
 
       if (depth < 0) {
-        throw new Error("Depth cannot be less than zero");
+        console.log("Depth cannot be less than zero");
       }
 
       const queue = [[source, destination, 0]];
@@ -498,4 +448,17 @@ await players.weave(
   [player3, roles, gardener]
 );
 
-console.log(players.get(player2).get(roles));
+console.log("hasThread test: ", await players.hasThread(player1, roles, chef));
+
+console.log(
+  "hasWeave test: ",
+  await players.hasWeave(
+    [player1, roles],
+    [player2, roles, cleaner],
+    [player3, roles, gardener]
+  )
+);
+
+//console.log(players.get(player2).get(roles));
+await players.thread(player1, "key-dive", roles, chef);
+console.log("Key-dive during thread test:", roles); // we should be seeing the roles card have a chef card nested within it

@@ -38,14 +38,14 @@
         font-family: inherit;
       }
       
-      #narratives {
+      #rules {
         display: flex;
         flex-direction: row;
         overflow-x: auto;
         height: auto;
         gap: 10px;
       }
-      .narrative-card,
+      .rule-card,
       .form-card {
         width: 160px;
         height: 240px;
@@ -150,15 +150,15 @@
     <main>
       <section>
         <div class="form-card">
-          <form id="narrative-form">
-            <input type="text" id="narrative-name" placeholder="name" required />
-            <input type="number" id="narrative-priority" placeholder="priority"  />
-            <textarea id="narrative-generator" placeholder="[λ*] body" required></textarea>
-            <button type="submit">Add Narrative</button>
+          <form id="rule-form">
+            <input type="text" id="rule-name" placeholder="name" required />
+            <input type="number" id="rule-priority" placeholder="priority"  />
+            <textarea id="rule-generator" placeholder="[λ*] body" required></textarea>
+            <button type="submit">Add Rule</button>
 
           </form>
         </div>
-        <div id="narratives"></div>
+        <div id="rules"></div>
       </section>
       <div id="discard-area">Drop to remove</div>
     </main>
@@ -178,7 +178,7 @@
         <thead>
           <tr>
             <th>Event</th>
-            <th>Referencing Narratives</th>
+            <th>Referencing Rules</th>
           </tr>
         </thead>
         <tbody>
@@ -189,28 +189,28 @@
     
     <script type="module">
       import Game from "./game.js";
-      const narrativeForm = document.getElementById("narrative-form");
-      const narrativeNameInput = document.getElementById("narrative-name");
-      const narrativePriorityInput = document.getElementById(
-        "narrative-priority"
+      const ruleForm = document.getElementById("rule-form");
+      const ruleNameInput = document.getElementById("rule-name");
+      const rulePriorityInput = document.getElementById(
+        "rule-priority"
       );
-      const narrativeGeneratorInput = document.getElementById(
-        "narrative-generator"
+      const ruleGeneratorInput = document.getElementById(
+        "rule-generator"
       );
       const startGameButton = document.getElementById("play!");
-      const narrativesList = document.getElementById("narratives");
+      const rulesList = document.getElementById("rules");
       const canvas = document.getElementById("canvas");
       const discardArea = document.getElementById("discard-area");
 
       const game = new Game();
-      const narratives = {};
+      const rules = {};
       const priorities = {};
 
       let draggedCard;
 
       function createCard(name, priority, generatorFunctionBody) {
         const card = document.createElement("div");
-        card.classList.add("narrative-card");
+        card.classList.add("rule-card");
         card.draggable = true;
         card.ondragstart = (event) => {
           draggedCard = event.target;
@@ -227,45 +227,45 @@
       }
 
       function updatePriorities() {
-        const cards = Array.from(narrativesList.children);
+        const cards = Array.from(rulesList.children);
         cards.forEach((card, index) => {
           const priorityElement = card.querySelector(".priority");
           priorityElement.textContent = index + 1;
-          const narrativeName = card
+          const ruleName = card
             .querySelector("strong")
             .textContent.slice(6);
-          priorities[narrativeName] = index + 1;
+          priorities[ruleName] = index + 1;
         });
       }
 
-      narrativeForm.addEventListener("submit", (e) => {
+      ruleForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         try {
           const AsyncGeneratorFunction = async function* () {}.constructor;
-          const name = narrativeNameInput.value;
-          const priority = narrativePriorityInput.value
-            ? parseInt(narrativePriorityInput.value)
+          const name = ruleNameInput.value;
+          const priority = rulePriorityInput.value
+            ? parseInt(rulePriorityInput.value)
             : Object.keys(priorities).length + 1;
           const asyncgeneratorFunction = new AsyncGeneratorFunction(
-            narrativeGeneratorInput.value
+            ruleGeneratorInput.value
           );
 
-          narratives[name] = asyncgeneratorFunction;
+          rules[name] = asyncgeneratorFunction;
           priorities[name] = priority;
 
           const card = createCard(
             name,
             priority,
-            narrativeGeneratorInput.value
+            ruleGeneratorInput.value
           );
-          narrativesList.appendChild(card);
+          rulesList.appendChild(card);
 
           updatePriorities();
-          narrativeNameInput.value = "";
-          narrativePriorityInput.value = "";
-          narrativeGeneratorInput.value = "";
-          if (Object.keys(narratives).length > 0) {
+          ruleNameInput.value = "";
+          rulePriorityInput.value = "";
+          ruleGeneratorInput.value = "";
+          if (Object.keys(rules).length > 0) {
             startGameButton.disabled = false;
           }
         } catch (error) {
@@ -274,26 +274,26 @@
         }
       });
 
-      narrativesList.ondragover = (event) => {
+      rulesList.ondragover = (event) => {
         event.preventDefault();
       };
 
-      narrativesList.ondrop = (event) => {
+      rulesList.ondrop = (event) => {
         event.preventDefault();
 
-        const droppedOnCard = event.target.closest(".narrative-card");
+        const droppedOnCard = event.target.closest(".rule-card");
         if (droppedOnCard) {
-          const targetIndex = Array.from(narrativesList.children).indexOf(
+          const targetIndex = Array.from(rulesList.children).indexOf(
             droppedOnCard
           );
-          const draggedIndex = Array.from(narrativesList.children).indexOf(
+          const draggedIndex = Array.from(rulesList.children).indexOf(
             draggedCard
           );
 
           if (targetIndex < draggedIndex) {
-            narrativesList.insertBefore(draggedCard, droppedOnCard);
+            rulesList.insertBefore(draggedCard, droppedOnCard);
           } else {
-            narrativesList.insertBefore(draggedCard, droppedOnCard.nextSibling);
+            rulesList.insertBefore(draggedCard, droppedOnCard.nextSibling);
           }
 
           updatePriorities();
@@ -307,20 +307,20 @@ discardArea.ondragover = (event) => {
 discardArea.ondrop = (event) => {
   event.preventDefault();
 
-  const narrativeName = draggedCard
+  const ruleName = draggedCard
     .querySelector("strong")
     .textContent.slice(6);
 
-  // Remove the card from the narratives list
-  narrativesList.removeChild(draggedCard);
+  // Remove the card from the rules list
+  rulesList.removeChild(draggedCard);
 
-  // Remove the narrative from the `narratives` and `priorities` objects
-  delete narratives[narrativeName];
-  delete priorities[narrativeName];
+  // Remove the rule from the `rules` and `priorities` objects
+  delete rules[ruleName];
+  delete priorities[ruleName];
 
   updatePriorities();
 
-  if (Object.keys(narratives).length === 0) {
+  if (Object.keys(rules).length === 0) {
     startGameButton.disabled = true;
   }
 };
@@ -335,20 +335,20 @@ discardArea.ondrop = (event) => {
   discardArea.ondrop = (event) => {
     event.preventDefault();
 
-    const narrativeName = draggedCard
+    const ruleName = draggedCard
       .querySelector("strong")
       .textContent.slice(6);
 
-    // Remove the card from the narratives list
-    narrativesList.removeChild(draggedCard);
+    // Remove the card from the rules list
+    rulesList.removeChild(draggedCard);
 
-    // Remove the narrative from the `narratives` and `priorities` objects
-    delete narratives[narrativeName];
-    delete priorities[narrativeName];
+    // Remove the rule from the `rules` and `priorities` objects
+    delete rules[ruleName];
+    delete priorities[ruleName];
 
     updatePriorities();
 
-    if (Object.keys(narratives).length === 0) {
+    if (Object.keys(rules).length === 0) {
       startGameButton.disabled = true;
     }
   };
@@ -374,7 +374,7 @@ discardArea.ondrop = (event) => {
   }
   
   startGameButton.addEventListener("click", () => {
-  game.addAll(narratives, priorities);
+  game.addAll(rules, priorities);
   game.run(renderGame);
   //updateEventDictionaryTable();
 });

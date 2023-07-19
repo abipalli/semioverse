@@ -17,21 +17,21 @@ class EventDictionary extends Map {
     super(args);
   }
 
-  addEventReference(eventType, narrativeRef) {
+  addEventReference(eventType, ruleRef) {
     if (!this.has(eventType)) {
       this.set(eventType, []);
     }
-    this.get(eventType).push(narrativeRef);
+    this.get(eventType).push(ruleRef);
   }
 
-  getNarrativesForEvent(eventType) {
+  getRulesForEvent(eventType) {
     return this.get(eventType) || [];
   }
 
-  removeEventReference(eventType, narrativeRef) {
+  removeEventReference(eventType, ruleRef) {
     if (this.has(eventType)) {
       const refs = this.get(eventType);
-      const index = refs.indexOf(narrativeRef);
+      const index = refs.indexOf(ruleRef);
       if (index !== -1) {
         refs.splice(index, 1);
         if (refs.length === 0) {
@@ -110,8 +110,8 @@ class Game extends Oxel {
     this._messages.push(message);
   }
 
-  getNarrativesForEvent(eventType) {
-    return this._eventDictionary.getNarrativesForEvent(eventType);
+  getRulesForEvent(eventType) {
+    return this._eventDictionary.getRulesForEvent(eventType);
   }
 
   async express(...threads) {
@@ -144,11 +144,11 @@ class Game extends Oxel {
     return expr;
   }
 
-  async addNarrative(name, prio, fun) {
+  async addRule(name, prio, fun) {
     var bound = fun.bind({
       lastEvent: () => this.lastEvent,
       express: async (...threads) => this.express(...threads),
-      // this allows narratives to access the story, the expressions, and express function, thread, weave
+      // this allows rules to access the story, the expressions, and express function, thread, weave
       expressions: new Set(),
       gameExpressions: this.expressions,
       messages: this.messages,
@@ -159,33 +159,33 @@ class Game extends Oxel {
       disabled: this.disabled,
       eventDictionary: this.eventDictionary,
     });
-    var nar = await bound(); // Activate the async generator
+    var rule = await bound(); // Activate the async generator
     var bid = {
       name: name,
       priority: prio,
-      narrative: nar,
+      rule: rule,
       expressions: new Set(),
       stepIndex: 0, // Initialize step index
     };
     this._running.push(bid);
     // Add event references to the dictionary
-    /*const eventTypes = this.extractEventTypesFromNarrative([...nar]);
-            eventTypes.forEach((eventType) =>
-              this._eventDictionary.addEventReference(eventType, name)
-            );*/
+    /*const eventTypes = this.extractEventTypesFromRule(rule);
+    eventTypes.forEach((eventType) =>
+      this._eventDictionary.addEventReference(eventType, name)
+    );*/
   }
 
-  addAll(narratives, priorities) {
-    for (var name in narratives) {
-      var fun = narratives[name];
+  addAll(rules, priorities) {
+    for (var name in rules) {
+      var fun = rules[name];
       var prio = priorities[name];
-      this.addNarrative(name, prio, fun);
+      this.addRule(name, prio, fun);
     }
   }
 
   async request(e) {
     var name = "request " + e;
-    var nar = async function* () {
+    var rule = async function* () {
       yield {
         request: [e],
         wait: [
@@ -196,7 +196,7 @@ class Game extends Oxel {
       };
     };
     // XXX should be lowest priority (1 is highest)
-    await this.addNarrative(name, 1, nar);
+    await this.addRule(name, 1, rule);
     await this.run(); // Initiate super-step
   }
 
@@ -206,17 +206,17 @@ class Game extends Oxel {
     }
     while (notEmpty(this._running)) {
       var bid = this._running.shift();
-      var nar = bid.narrative;
-      var next = await nar.next(this._lastEvent);
+      var rule = bid.rule;
+      var next = await rule.next(this._lastEvent);
       if (!next.done) {
         var newbid = next.value; // Run an iteration of the async generator
-        newbid.narrative = nar; // Bind the narrative to the bid for running later
+        newbid.rule = rule; // Bind the rule to the bid for running later
         newbid.priority = bid.priority; // Keep copying the prio
         newbid.name = bid.name; // Keep copying the name
-        newbid.stepIndex = bid.stepIndex++; // Update the current step of the narrative
+        newbid.stepIndex = bid.stepIndex++; // Update the current step of the rule
         this._pending.push(newbid);
       } else {
-        // This is normal - the narrative has finished.
+        // This is normal - the rule has finished.
       }
     }
     // End of current part
@@ -250,7 +250,7 @@ class Game extends Oxel {
             cur = true;
           }
         }
-        if (cur && bid.narrative) {
+        if (cur && bid.rule) {
           //bid.stepIndex++; // Increment the step index /////////////////////////////////////////////////////////////////////////////
           this._running.push(bid);
         } else {
@@ -344,7 +344,7 @@ class Game extends Oxel {
     }
   }
 
-  disableNarrative(name) {
+  disableRule(name) {
     const index = this._running.findIndex((bid) => bid.name === name);
     if (index !== -1) {
       const bid = this._running[index];
@@ -353,7 +353,7 @@ class Game extends Oxel {
     }
   }
 
-  enableNarrative(name) {
+  enableRule(name) {
     const index = this._disabled.findIndex((bid) => bid.name === name);
     if (index !== -1) {
       const bid = this._disabled[index];
@@ -362,7 +362,7 @@ class Game extends Oxel {
     }
   }
 
-  removeNarrative(name) {
+  removeRule(name) {
     const removeFromList = (list) => {
       const index = list.findIndex((bid) => bid.name === name);
       if (index !== -1) {
@@ -379,7 +379,7 @@ class Game extends Oxel {
     }
   }
 
-  // It would be useful to have an extractEventTypesFromNarrative(narrative)
+  // It would be useful to have an extractEventTypesFromRule(rule)
 }
 
 export default Game;
