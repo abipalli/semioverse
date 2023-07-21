@@ -3,7 +3,7 @@ import Oxel from "./oxel.js";
 export const recognizers = new Oxel("recognizers");
 export const recognizer = new Oxel("recognizer");
 
-// recognition is always recognition of a schema through which to interpret the the thread with the oxel interpretor.
+// not sure about this -> recognition is always recognition of a schema through which to interpret the the thread with the oxel interpretor.
 export const recognition = new Oxel("recognition");
 
 export const actual = new Oxel("actual");
@@ -20,7 +20,6 @@ export const scenes = new Oxel("scenes");
 export const roles = new Oxel("roles");
 export const moves = new Oxel("moves");
 
-// add phone number to player card
 export const phoneNumber = new Oxel("phone number");
 
 export const containers = new Oxel("containers");
@@ -42,6 +41,8 @@ export const event = new Oxel("event");
 
 export const assets = new Oxel("assets");
 export const liabilities = new Oxel("liabilities");
+
+export const skills = new Oxel("skills");
 
 export const turns = new Oxel("turns");
 export const characteristics = new Oxel("characteristics");
@@ -67,8 +68,6 @@ export const replace = new Oxel("replace");
 
 export const filter = new Oxel("filter");
 export const filterLayer = new Oxel("filter-layer");
-
-//Conditional Branching (If-Else Oxel): This Oxel will represent the if-else logic. It might have three values - the "Condition" Oxel, the "True Block" Oxel and the "False Block" Oxel. The Condition Oxel will hold the condition to evaluate. The True Block and False Block Oxels will hold the Oxels to be executed when the condition is true or false, respectively.
 
 export const add = new Oxel("add");
 export const subtract = new Oxel("subtract");
@@ -177,6 +176,7 @@ export const compare = await new Oxel("compare").weave(
 export const interpreters = new Oxel("interpretors");
 export const lastEvent = new Oxel("lastEvent");
 
+// Navigation Oxels
 export const KeyDive = new Oxel("Key Dive");
 export const Backtrack = new Oxel("Backtrack"); // This Oxel could take you back to the previous Oxel visited. This would involve maintaining some sort of history or stack of visited Oxels.
 export const RandomWalk = new Oxel("Random Walk"); // This Oxel could randomly choose the next Oxel to visit from the current Oxel's neighbors. This is useful for stochastic processes or simply for exploring the graph.

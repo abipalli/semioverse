@@ -86,6 +86,8 @@ player.navigate(scenes, roles, moves)
 players.shift([player1, roles, chef], [player2, roles])
 ```
 
+![shift](image/README/shift.png)
+
 In terms of game design, the `shift` method could be used to transfer roles, objects, or other properties between different parts of the game state. For example, it could be used to move a player from one scene to another, to pass an element from one character to another, or to move something from potentiality to actuality.
 
 **swap 🔄:** This method is used to replace a value at the given key 🔑 in a `Oxel` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
@@ -172,7 +174,7 @@ While traversing through this oxel-graph, the interpreter would parse the keys �
 
 # Contributing to this repo! 🤝🧩
 
-**Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting semioversal magic!** 🎭🌍🎲💬
+**Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting semioversal magic!** *Bring your dreams and visions and lets weave interfaces for them!* 🎭🌍🎲💬
 
 ## Merge to Earn 💰🔄🧩
 
