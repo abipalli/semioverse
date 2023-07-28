@@ -74,6 +74,7 @@ player.weave(
 
 **hasThread 🧵:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
 
+![hasThread](image/README/hasThread.png)
 
 **shift 🔄:** The `shift` method is used to move a 🔑 key-value pair from one position in the Oxel graph to another. It takes two routes as input, navigates to the end of the first route, removes the key-value pair located there, then navigates to the end of the second route and inserts the removed key-value pair at that location.
 
@@ -179,4 +180,4 @@ While traversing through this oxel-graph, the interpreter would parse the keys �
 
 ## Merge to Earn 💰🔄🧩
 
-We will be setting up [Merge to Earn](https://mte.slice.so/) on this repository.
+We will be setting up [Merge to Earn](https://mte.slice.so/) on this repository. Shares of the Merge to Earn slicer do not represent shares of ownership over this project in any form, rather they represent only shares of the tokens that pass through the slicer.
