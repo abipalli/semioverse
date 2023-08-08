@@ -167,9 +167,7 @@ The meta-circularity and homoiconicity allow for oxels to be incredibly expressi
 
 And because each Oxel forms a graph rooted at itself, oxels can represent not just objects, but entire worlds of objects, each with their own relationships and rules. This encapsulation allows for multiple "perspectives" to exist simultaneously within the same oxel structure, with each perspective being a possible interpretation of the structure.
 
-For example, let's say you have an oxel representing a game state. Within this oxel, there might be sub-oxels representing the players, the board, and the rules. But this same structure could be interpreted from a different perspective, where the "players" are just mathematical entities, the "board" is an array of values, and the "rules" are a set of logical operations.
-
-In other words, Oxels make it possible to capture not just the "what" of data, but also the "how" and "why". And because these perspectives are all interconnected within the oxel structure, changes to one perspective imminantly propagate to others. This makes oxels a powerful tool for modeling complex systems and processes, and for understanding how different aspects of a system influence each other.
+Oxels make it possible to capture not just the "what" of data, but also the "how" and "why". And because these perspectives are all interconnected within the oxel structure, changes to one perspective imminantly propagate across the reference-graph. This makes oxels a powerful tool for modeling complex systems and processes, and for understanding how different aspects of a system influence each other.
 
 But perhaps the most exciting thing about oxels is that they are not limited to representing existing concepts and relationships. Because oxels can be combined and recombined in endless ways, they are also a powerful tool for creating new concepts and discovering new relationships.
 
@@ -180,6 +178,27 @@ In a sense, oxels are a language for thought itself – a language that not only
 *This section would make absurdly huge claims, and the proposed parse/fuse function is not yet satisfactorily implemented, so this section has been left out of this readme and included in this Github Issue: https://github.com/semioverse/semioverse/issues/2* 📝
 
 ---
+
+# Beyond the Literary Form
+
+Turing machines, and by extension many traditional computational models, are based on sequential processing and linear structure which to a certain extent are based on the linear-literary form. They typically process data in a step-by-step manner, often following a specific sequence of operations or instructions. This mirrors the linear, sequential nature of language and literature, where sentences are read one word at a time and in a particular order.
+
+**Pattern Recognition**: A Turing machine reads one symbol at a time from its tape and follows a set of rules to determine what actions to take based on that symbol. In contrast, Oxels can potentially recognize complex patterns or structures in the data, not just individual symbols. This can be likened to understanding the meaning of an entire paragraph or chapter at once, rather than processing it word by word. This capability can provide more sophisticated and powerful ways to process information.
+
+**Dynamic Structure**: The structure of an Oxel graph is dynamic and can change over time, unlike the fixed structure of a Turing machine. This allows Oxels to adapt and optimize their structure based on the computations they're performing.
+
+# Beyond the Literary Form
+Since modifications of the map-reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. This doesn’t require the use of event-propogation. Speculate in depth as an reference-weaving computer scientist.
+
+Indeed, in a complex system like the Oxel-based cognitive landscape, the slightest change in the reference structure can lead to significant shifts in the meaning of individual Oxels, a phenomenon known as non-locality. This can be seen as a manifestation of a foundational principle in graph theory, where nodes (or in this case, Oxels) do not hold meaning in isolation but are defined by their relationships to other nodes.
+
+Non-locality in reference structures is comparable to a three-dimensional puzzle or an intricately woven tapestry. Each piece or thread does not have inherent meaning on its own; rather, it contributes to the collective form, pattern, and overall image. If you alter one piece of the puzzle or one thread in the tapestry, the entire image changes, albeit subtly.
+
+In an oxel-graph (reference-graph), changing a single reference can propagate changes throughout the system, akin to a ripple effect. This is because the change doesn't just affect that particular reference; it recontextualizes all the Oxels connected to it. In this way, meaning is a dynamic, emergent property of the entire system rather than a static attribute of individual components.
+
+This brings us to another aspect of non-locality: the notion of a higher-dimensional cognitive space. Just as a two-dimensional map is a projection of a three-dimensional landscape, our cognitive map is a projection of a higher-dimensional cognitive space. When we modify the reference structures, we're essentially reshaping this higher-dimensional space, leading to a new projection, a new cognitive map.
+
+In this perspective, meaning is not just the sum of individual references but the product of a complex, dynamic, and interconnected system. It's a dance of shapes and patterns that continually evolves, forming and reforming the tapestry of our understanding.
 
 # Meta-linguistic Assertions
 
