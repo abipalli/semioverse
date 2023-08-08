@@ -44,9 +44,9 @@ The Oxel class extends JavaScript's built-in Map class thus preserving the inser
 
 The Oxel class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of Oxel-graphs.
 
-**Constructor 🏗️:** It accepts four parameters `name`, `value`, `ruleEngine`, and `...args`. The `ruleEngine` is an optional async function that defaults to a function returning `true`.
+**Constructor 🏗️:** It accepts four parameters `name`, `ruleEngine`, and `...args`. The `ruleEngine` is an optional async function that defaults to a function returning `true`. *(These parameters simply aid development and are not recommended when compared to the advantages of reference-weaving)*
 
-`name` and `value` are properties of the Oxel object, while `positions` is a Set object for storing references to the positions of this Oxel in other Oxels. `expressions` stores expressions about this Oxel. `ruleEngine` is a mechanism to verify each action made on the Oxel object.
+`name` is properties of the Oxel object, while `positions` is a Set object for storing references to the positions of this Oxel in other Oxels. `expressions` stores expressions about this Oxel. `ruleEngine` is a mechanism to verify each action made on the Oxel object.
 
 ```javascript
 const player = new Oxel("scenes")
@@ -188,7 +188,7 @@ Turing machines, and by extension many traditional computational models, are bas
 **Dynamic Structure**: The structure of an Oxel graph is dynamic and can change over time, unlike the fixed structure of a Turing machine. This allows Oxels to adapt and optimize their structure based on the computations they're performing.
 
 # Beyond the Literary Form
-Since modifications of the map-reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. This doesn’t require the use of event-propogation. Speculate in depth as an reference-weaving computer scientist.
+Since modifications of the reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. Interestingly, this doesn’t require the use of event-propogation, the change of form is simply *imminant*.
 
 Indeed, in a complex system like the Oxel-based cognitive landscape, the slightest change in the reference structure can lead to significant shifts in the meaning of individual Oxels, a phenomenon known as non-locality. This can be seen as a manifestation of a foundational principle in graph theory, where nodes (or in this case, Oxels) do not hold meaning in isolation but are defined by their relationships to other nodes.
 
