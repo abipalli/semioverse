@@ -26,36 +26,36 @@ The keyword here is ***"Play!"*** It's not just about watching or listening pass
 
 ---
 
-# Ideas!
+# Oxels!
 
-Ideas are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organizations collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Ideas can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Ideas as Cards).
+Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organizations collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
 
-In the context of this program, Ideas are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Idea is not just a node; it's a perspective, a point of view within a semio-dimensional relational graph. It can hold any data type, even other Ideas, enabling intricate and dynamic interconnections.
+In the context of this program, Oxels are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Oxel is not just a node; it's a perspective, a point of view within a semio-dimensional relational graph. It can hold any data type, even other Oxels, enabling intricate and dynamic interconnections.
 
-Ideas come alive with their metaphoric capabilities allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating a network, Ideas can trace the metaphoric pathways that bind them. This mirrors human cognition, turning Ideas into a playground for computational creativity. Ideas are both a vessel to navigate the semioverse, as well as that which makes up its structure 🚢🧩🌐.
+Oxels come alive with their metaphoric capabilities allowing us to make metaphorical jumps across seemingly disparate concepts. When navigating a network, Oxels can trace the metaphoric pathways that bind them. This mirrors human cognition, turning Oxels into a playground for computational creativity. Oxels are both a vessel to navigate the semioverse, as well as that which makes up its structure 🚢🧩🌐.
 
-Ideas are more than a data structure. They're a semiotic game element, a tool for modeling and navigating interconnected and unfolding concepts and relationships. Whether you're crafting a game, exploring a social network, or constructing a semio-dimensional grammar, the Idea is your key 🔑 to unlocking new depths of understanding and connection. Ideas effectively allow us to move beyond the linearity of the literary form itself! Welcome to the Semioverse, where Ideas are the language and the landscape!
+Oxels are more than a data structure. They're a semiotic game element, a tool for modeling and navigating interconnected and unfolding concepts and relationships. Whether you're crafting a game, exploring a social network, or constructing a semio-dimensional grammar, the Oxel is your key 🔑 to unlocking new depths of understanding and connection. Oxels effectively allow us to move beyond the linearity of the literary form itself! Welcome to the Semioverse, where Oxels are the language and the landscape!
 
 ---
 
 # What? That sounds crazy! What do they do exactly? 🤔🧩
 
-The Idea class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where **keys and values can be of any type including other Idea instances**. This creates a network of iterable sets of associations/relationships that are the key-value pairs of each Idea.
+The Oxel class extends JavaScript's built-in Map class thus preserving the insertion order of key-value pairs, where **keys and values can be of any type including other Oxel instances**. This creates a network of iterable sets of associations/relationships that are the key-value pairs of each Oxel.
 
-The Idea class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of Idea-graphs.
+The Oxel class includes methods such as thread, weave, navigate, and swap, each functionally representing different components of meaning and facilitating the creation, navigation, and transformation of Oxel-graphs.
 
 **Constructor 🏗️:** It accepts four parameters `name`, `value`, `ruleEngine`, and `...args`. The `ruleEngine` is an optional async function that defaults to a function returning `true`.
 
-`name` and `value` are properties of the Idea object, while `positions` is a Set object for storing references to the positions of this Idea in other Ideas. `expressions` stores expressions about this Idea. `ruleEngine` is a mechanism to verify each action made on the Idea object.
+`name` and `value` are properties of the Oxel object, while `positions` is a Set object for storing references to the positions of this Oxel in other Oxels. `expressions` stores expressions about this Oxel. `ruleEngine` is a mechanism to verify each action made on the Oxel object.
 
 ```javascript
-const player = new Idea("scenes")
-const scenes = new Idea("scenes");
-const roles = new Idea("roles");
-const moves = new Idea("moves");
+const player = new Oxel("scenes")
+const scenes = new Oxel("scenes");
+const roles = new Oxel("roles");
+const moves = new Oxel("moves");
 ```
 
-**thread 🧵:** The thread method adds each input path as a key 🔑 within the current Idea and gets the value of that key, traversing the graph to the next Idea if it exists (creating a new Idea otherwise) which becomes the current Idea. This repeats till all paths have been added and traversed.
+**thread 🧵:** The thread method adds each input path as a key 🔑 within the current Oxel and gets the value of that key, traversing the graph to the next Oxel if it exists (creating a new Oxel otherwise) which becomes the current Oxel. This repeats till all paths have been added and traversed.
 
 ```javascript
 player.thread(scenes, roles, moves)
@@ -74,11 +74,11 @@ player.weave(
 
 ![1688826697642](image/README/weave.png)
 
-**hasThread 🧵:** This method can help to check if a particular thread exists within an Idea, and it could be used for checking conditions in gameplay rules.
+**hasThread 🧵:** This method can help to check if a particular thread exists within an Oxel, and it could be used for checking conditions in gameplay rules.
 
 ![hasThread](image/README/hasThread.png)
 
-**shift 🔄:** The `shift` method is used to move a 🔑 key-value pair from one position in the Idea-graph to another. It takes two routes as input, navigates to the end of the first route, removes the key-value pair located there, then navigates to the end of the second route and inserts the removed key-value pair at that location.
+**shift 🔄:** The `shift` method is used to move a 🔑 key-value pair from one position in the Oxel-graph to another. It takes two routes as input, navigates to the end of the first route, removes the key-value pair located there, then navigates to the end of the second route and inserts the removed key-value pair at that location.
 
 ```javascript
 players.shift([player1, roles, chef], [player2, roles])
@@ -88,21 +88,21 @@ players.shift([player1, roles, chef], [player2, roles])
 
 In terms of game design, the `shift` method could be used to transfer roles, objects, or other properties between different parts of the game state. For example, it could be used to move a player from one scene to another, to pass an element from one character to another, or to move something from potentiality to actuality.
 
-**swap 🔄:** This method is used to replace a value at the given key 🔑 in a `Idea` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
+**swap 🔄:** This method is used to replace a value at the given key 🔑 in a `Oxel` or `Map` structure at the end of each given route. The `swap` method will replace the key-value pair at the end of the route. The original key-value pair that was replaced is yielded back to the caller.
 
-**navigate 🧭:** This method is for navigating through the Idea's structure based on paths or a generator object. It respects the `ruleEngine` and follows the paths provided, keeping track of `currentIdea` and `previousIdea` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword `"metaphor-dive"`, it looks ahead one path and goes deeper if possible. It yields an object containing `previousIdea`, `pathTaken`, and `currentIdea`.
+**navigate 🧭:** This method is for navigating through the Oxel's structure based on paths or a generator object. It respects the `ruleEngine` and follows the paths provided, keeping track of `currentOxel` and `previousOxel` in the `positions` set, effectively allowing for bi-directional navigation. If it encounters the reserved keyword `"metaphor-dive"`, it looks ahead one path and goes deeper if possible. It yields an object containing `previousOxel`, `pathTaken`, and `currentOxel`.
 
 ```javascript
 player.navigate(scenes, roles, moves)
 ```
 
-**snapshot 📸:** This method is used to create a snapshot of the current state of the `Idea` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Idea` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the *state-of-play* in order to undo moves or to provide *proofs of state* 🧩📸🔐.
+**snapshot 📸:** This method is used to create a snapshot of the current state of the `Oxel` structure up to a specified depth. It first checks if the operation is allowed by the `ruleEngine`, then creates a deep copy of the current `Oxel` up to the provided depth, and lastly freezes the copied structure to prevent mutation. The snapshot method has many uses including allowing players to capture the *state-of-play* in order to undo moves or to provide *proofs of state* 🧩📸🔐.
 
-What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Ideas) are linked through paths (thread 🧵), creating a network (weave 🕸️) that can be explored (navigate 🧭) and transformed (shift/swap 🔄).
+What emerges from the methods introduced so far is a dynamic system of meaning where individual units (Oxels) are linked through paths (thread 🧵), creating a network (weave 🕸️) that can be explored (navigate 🧭) and transformed (shift/swap 🔄).
 
 *(note that in the future we want to make all methods and properties oxels themselves that are woven, and use the oxel-based interpreter)*
 
-# Ideas as perspectives 👁️🧩
+# Oxels as perspectives 👁️🧩
 
 **Interestingly the structure created by threading/weaving oxels embodies the concept of perception 👁️.** For example, imagine constructing oxels to symbolize all individuals populating your life-world, yourself included 👥🌍🧩.
 
@@ -133,11 +133,11 @@ constellations.weave(
 
 ## Metaphor 🦉
 
-A metaphor involves using a signifier from one symbolic constellation to represent something in another constellation. Metaphors can bridge gaps between disparate concepts, making unfamiliar ideas more relatable and understandable. Using Idea instances as keys 🔑 essentially enables the system to function on multiple levels of abstraction simultaneously.
+A metaphor involves using a signifier from one symbolic constellation to represent something in another constellation. Metaphors can bridge gaps between disparate concepts, making unfamiliar ideas more relatable and understandable. Using Oxel instances as keys 🔑 essentially enables the system to function on multiple levels of abstraction simultaneously.
 
-Because the Idea class extends the Map class allowing for keys and values to be of any type, keys 🔑 can themselves be Idea instances. By permitting keys to be Idea instances rather than simple identifiers (of type string/symbol), the system allows for metaphorical connections to be made.
+Because the Oxel class extends the Map class allowing for keys and values to be of any type, keys 🔑 can themselves be Oxel instances. By permitting keys to be Oxel instances rather than simple identifiers (of type string/symbol), the system allows for metaphorical connections to be made.
 
-Using Idea instances as keys 🔑 - signifying metaphor - adds a degree of conceptual abstraction that makes this system incredibly powerful for bridging gaps between disparate systems or concepts.
+Using Oxel instances as keys 🔑 - signifying metaphor - adds a degree of conceptual abstraction that makes this system incredibly powerful for bridging gaps between disparate systems or concepts.
 
 ## Metaphor-dive during Navigation
 
@@ -147,7 +147,7 @@ When the navigation method encounters the "metaphor-dive" token, it traverses in
 
 This mirrors the way human cognition often works: we constantly make connections between seemingly unrelated concepts based on their shared properties or associated ideas. For example, the word 'network' has been borrowed from its original physical sense (a net-like structure 🕸️) to describe social and computer systems.
 
-With metaphor-dive, Idea-graphs can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Idea-graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
+With metaphor-dive, Oxel-graphs can support more sophisticated forms of reasoning, including analogical and metaphorical thinking. It can enable a form of computational creativity, where new connections between concepts are generated dynamically based on their metaphorical relationships. By combining direct (literal) and indirect (metaphorical) relationships, the Oxel-graph can evolve and expand in a more organic and dynamic way, closely mirroring the way human knowledge grows.
 
 # Interpretation
 
@@ -165,11 +165,11 @@ While traversing through this oxel-graph, the interpreter would parse the keys �
 
 The meta-circularity and homoiconicity allow for oxels to be incredibly expressive and dynamic. You can create new operations, alter existing ones, or change the control flow entirely, all within the structure of the oxels themselves. In other words, the oxels and their relationships are both the structure and the manipulation of the structure. This dynamic nature opens up a vast potential for complex, self-modifying, and self-adaptive systems.
 
-And because each Idea forms a graph rooted at itself, oxels can represent not just objects, but entire worlds of objects, each with their own relationships and rules. This encapsulation allows for multiple "perspectives" to exist simultaneously within the same oxel structure, with each perspective being a possible interpretation of the structure.
+And because each Oxel forms a graph rooted at itself, oxels can represent not just objects, but entire worlds of objects, each with their own relationships and rules. This encapsulation allows for multiple "perspectives" to exist simultaneously within the same oxel structure, with each perspective being a possible interpretation of the structure.
 
 For example, let's say you have an oxel representing a game state. Within this oxel, there might be sub-oxels representing the players, the board, and the rules. But this same structure could be interpreted from a different perspective, where the "players" are just mathematical entities, the "board" is an array of values, and the "rules" are a set of logical operations.
 
-In other words, Ideas make it possible to capture not just the "what" of data, but also the "how" and "why". And because these perspectives are all interconnected within the oxel structure, changes to one perspective imminantly propagate to others. This makes oxels a powerful tool for modeling complex systems and processes, and for understanding how different aspects of a system influence each other.
+In other words, Oxels make it possible to capture not just the "what" of data, but also the "how" and "why". And because these perspectives are all interconnected within the oxel structure, changes to one perspective imminantly propagate to others. This makes oxels a powerful tool for modeling complex systems and processes, and for understanding how different aspects of a system influence each other.
 
 But perhaps the most exciting thing about oxels is that they are not limited to representing existing concepts and relationships. Because oxels can be combined and recombined in endless ways, they are also a powerful tool for creating new concepts and discovering new relationships.
 
