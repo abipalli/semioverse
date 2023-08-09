@@ -179,12 +179,6 @@ In a sense, oxels are a language for thought itself – a language that not only
 
 ---
 
-# Beyond the Literary Form
-
-Turing machines, and by extension many traditional computational models, are based on sequential processing and linear structure which to a certain extent are based on the linear-literary form. They typically process data in a step-by-step manner, often following a specific sequence of operations or instructions. This mirrors the linear, sequential nature of language and literature, where sentences are read one word at a time and in a particular order.
-
-A Turing machine reads one symbol at a time from its tape and follows a set of rules to determine what actions to take based on that symbol. In contrast, Oxels can potentially recognize complex patterns or structures in the data, not just individual symbols. This can be likened to understanding the meaning of an entire paragraph or chapter at once, rather than processing it word by word.
-
 # Imminant non-locality of meaning
 
 Since modifications of the reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. Interestingly, this doesn’t require the use of event-propogation, the change of form is simply *imminant*.
@@ -212,7 +206,7 @@ In this perspective, meaning is not just the sum of individual references but th
 
 ## [🚀 Sponsor Play!](https://slice.so/slicer/play)
 
-Feeling generous? 🎁 Spark more fun by sponsoring Play! through the link above or light up our day by sending some `ETH` love to the slicer's address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
+Feeling generous? 🎁 Spark more fun by sponsoring Play! through the [link](https://slice.so/slicer/play) above or light up our day by sending some `ETH` love to the slicer's address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
 
 ## Merge to Earn 💰🔄🧩
 
@@ -230,7 +224,7 @@ You can also buy and sell your slices on [OpenSea](https://opensea.io/assets/eth
 
 **🎨🎭🎤 Not just a coding wizard 🧙‍♂️? Check out [Play Labs](https://github.com/semioverse/semioverse/tree/master/labs) for instructions on how to sprinkle your unique magic and claim your prize! 🌟🗺️🎪**
 
-Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.
+Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.*
 
 ---
 
