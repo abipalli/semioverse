@@ -220,7 +220,7 @@ This repository uses [Merge to Earn](https://mte.slice.so/) to automate rewardin
 
 This repository uses [Merge to Earn](https://mte.slice.so/) to reward contributors with a piece of the [Play! slicer](https://slice.so/slicer/play).
 
-When merging a pull request, contributors **can receive an agreed number of slices cake (ERC1155 tokens) representing ownership over the earnings of the Play! slicer.**
+When merging a pull request, contributors **can receive an agreed number of slices (ERC1155 tokens) representing ownership over the earnings of the Play! slicer.**
 
 > See it in action on this [Demo PR](https://github.com/slice-so/merge-to-earn/pull/4)
 
