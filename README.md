@@ -212,7 +212,7 @@ In this perspective, meaning is not just the sum of individual references but th
 
 ## [Sponsor Play!](https://slice.so/slicer/play)
 
-You can sponsor the Play! [here](https://slice.so/slicer/play) or by sending `ETH` to this address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
+You can sponsor the Play! via the link above or by sending `ETH` to the slicer's address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
 
 ## Merge to Earn 💰🔄🧩
 
