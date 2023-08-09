@@ -210,25 +210,28 @@ In this perspective, meaning is not just the sum of individual references but th
 
 **Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting semioversal magic!** *Bring your dreams and visions and lets weave interfaces for them!* 🎭🌍🎲💬
 
-## [Sponsor Play!](https://slice.so/slicer/play)
+## [🚀 Sponsor Play!](https://slice.so/slicer/play)
 
-You can sponsor the Play! via the link above or by sending `ETH` to the slicer's address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
+Feeling generous? 🎁 Spark more fun by sponsoring Play! through the link above or light up our day by sending some `ETH` love to the slicer's address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
 
 ## Merge to Earn 💰🔄🧩
 
-This repository uses [Merge to Earn](https://mte.slice.so/) to reward contributors with a piece of the [Play! slicer](https://slice.so/slicer/play).
+This repository uses [Merge to Earn](https://mte.slice.so/) to reward contributors with a piece 🍰 of the [Play! slicer](https://slice.so/slicer/play).
 
 It enables a transparent, equitable reward system for collaborative and open-source development.
 
 When merging a pull request, contributors **can receive an agreed number of slices (ERC1155 tokens) representing ownership over the earnings of the Play! slicer.**
 
-> See it in action on this [Demo PR](https://github.com/slice-so/merge-to-earn/pull/4)
+> Curious cat? 😸 Peek into the magic with this [Demo PR](https://github.com/slice-so/merge-to-earn/pull/4)
 
 Funds earned can be claimed anytime on [slice.so](https://slice.so) while slices can be transferred and managed from either the Slice website or directly from your ETH wallet.
 
 You can also buy and sell your slices on [OpenSea](https://opensea.io/assets/ethereum/0x21da1b084175f95285B49b22C018889c45E1820d/37)!
 
-Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.*
+**🎨🎭🎤 Not just a coding wizard 🧙‍♂️? Check out [Play Labs](https://github.com/semioverse/semioverse/tree/master/labs) for instructions on how to sprinkle your unique magic and claim your prize! 🌟🗺️🎪**
+
+Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.
 
 ---
-*This document is a living artifact and may evolve with the growth and exploration of the community. The contents, concepts, and vision here are not set in stone but are a launchpad for continued innovation and exploration. Together, we will shape the future of Play!, Oxels, and beyond!* 🚀🧠🎮🧩🌌
+
+*This document is a living artifact and may evolve with the growth and exploration of the community. The contents, concepts, and vision here are not set in stone but are a launchpad for continued innovation and exploration. Together, we will shape the future of Play!, Oxels, and beyond!* 🚀🧩🌌
