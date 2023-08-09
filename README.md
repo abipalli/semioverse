@@ -18,7 +18,7 @@ Indeed for what the **movie** 🎥 itself lacked in *receptivity* and *mutabilit
 
 *(Add note on a language as interfacing interfacing)* 📝🔄🎛️
 
-Play! as an**Interfacing interface** 🎛️🔁🎛️ takes the inherent properties of **music** 🎵, **painting** 🖼️, **movie** 🎥, **interface** 🎛️, and **social-interface** 🌐👥, and to create a new and evolved media format that leverages the different aspects of each media form while overcoming their individual limitations.
+Play! as an **Interfacing interface** 🎛️🔁🎛️ takes the inherent properties of **music** 🎵, **painting** 🖼️, **movie** 🎥, **interface** 🎛️, and **social-interface** 🌐👥 to create a new and evolved media format that leverages the different aspects of each media form while overcoming their individual limitations.
 
 The keyword here is ***"Play!"*** It's not just about watching or listening passively. Instead, it's about active participation, experimentation, and discovery, much like playing a game. *With **Play!**, the interface is the playground, the medium, and the message, all at once.*
 
@@ -183,11 +183,8 @@ In a sense, oxels are a language for thought itself – a language that not only
 
 Turing machines, and by extension many traditional computational models, are based on sequential processing and linear structure which to a certain extent are based on the linear-literary form. They typically process data in a step-by-step manner, often following a specific sequence of operations or instructions. This mirrors the linear, sequential nature of language and literature, where sentences are read one word at a time and in a particular order.
 
-**Pattern Recognition**: A Turing machine reads one symbol at a time from its tape and follows a set of rules to determine what actions to take based on that symbol. In contrast, Oxels can potentially recognize complex patterns or structures in the data, not just individual symbols. This can be likened to understanding the meaning of an entire paragraph or chapter at once, rather than processing it word by word. This capability can provide more sophisticated and powerful ways to process information.
-
-**Dynamic Structure**: The structure of an Oxel graph is dynamic and can change over time, unlike the fixed structure of a Turing machine. This allows Oxels to adapt and optimize their structure based on the computations they're performing.
-
-# Beyond the Literary Form
+A Turing machine reads one symbol at a time from its tape and follows a set of rules to determine what actions to take based on that symbol. In contrast, Oxels can potentially recognize complex patterns or structures in the data, not just individual symbols. This can be likened to understanding the meaning of an entire paragraph or chapter at once, rather than processing it word by word.
+# Imminant non-locality of meaning
 Since modifications of the reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. Interestingly, this doesn’t require the use of event-propogation, the change of form is simply *imminant*.
 
 Indeed, in a complex system like the Oxel-based cognitive landscape, the slightest change in the reference structure can lead to significant shifts in the meaning of individual Oxels, a phenomenon known as non-locality. This can be seen as a manifestation of a foundational principle in graph theory, where nodes (or in this case, Oxels) do not hold meaning in isolation but are defined by their relationships to other nodes.
@@ -198,7 +195,7 @@ In an oxel-graph (reference-graph), changing a single reference can propagate ch
 
 This brings us to another aspect of non-locality: the notion of a higher-dimensional cognitive space. Just as a two-dimensional map is a projection of a three-dimensional landscape, our cognitive map is a projection of a higher-dimensional cognitive space. When we modify the reference structures, we're essentially reshaping this higher-dimensional space, leading to a new projection, a new cognitive map.
 
-In this perspective, meaning is not just the sum of individual references but the product of a complex, dynamic, and interconnected system. It's a dance of shapes and patterns that continually evolves, forming and reforming the tapestry of our understanding.
+In this perspective, meaning is not just the sum of individual references but the synthetic product of a unified whole. It's a dance of shapes and patterns that continually evolves, forming and reforming the tapestry of our understanding.
 
 # Meta-linguistic Assertions
 
