@@ -216,9 +216,9 @@ You can sponsor the Play! via the link above or by sending `ETH` to the slicer's
 
 ## Merge to Earn 💰🔄🧩
 
-This repository uses [Merge to Earn](https://mte.slice.so/) to automate rewarding contributors with a share of ownership over funds sent to  this repository's [slicer](https://slice.so/slicer/play), when pull requests are merged. It enables a transparent, equitable reward system for collaborative and open-source development.
-
 This repository uses [Merge to Earn](https://mte.slice.so/) to reward contributors with a piece of the [Play! slicer](https://slice.so/slicer/play).
+
+It enables a transparent, equitable reward system for collaborative and open-source development.
 
 When merging a pull request, contributors **can receive an agreed number of slices (ERC1155 tokens) representing ownership over the earnings of the Play! slicer.**
 
@@ -229,3 +229,6 @@ Funds earned can be claimed anytime on [slice.so](https://slice.so) while slices
 You can also buy and sell your slices on [OpenSea](https://opensea.io/assets/ethereum/0x21da1b084175f95285B49b22C018889c45E1820d/37)!
 
 Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.*
+
+---
+*This document is a living artifact and may evolve with the growth and exploration of the community. The contents, concepts, and vision here are not set in stone but are a launchpad for continued innovation and exploration. Together, we will shape the future of Play!, Oxels, and beyond!* 🚀🧠🎮🧩🌌
