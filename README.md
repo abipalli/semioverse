@@ -28,7 +28,7 @@ The keyword here is ***"Play!"*** It's not just about watching or listening pass
 
 # Oxels!
 
-Oxels are **Organizational Elements**. The concept originates from and has been heavily explored at the experimental organizations collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨. (In the past we have reffered to Oxels as Cards).
+Oxels are **Organizational Elements**. The name originates from and has been heavily explored at the experimental organizations collective **[Xorg](https://xorg.how)** 🚀🧑‍🔬. While this repository only represents one branch of what Oxels can be, framing it in this way has been conducive to creative thinking 💡🎨.
 
 In the context of this program, Oxels are a transformative data structure that revolutionizes the way we compose, weave, program, and interpret networks of relationships. An Oxel is not just a node; it's a perspective, a point of view within a semio-dimensional relational graph. It can hold any data type, even other Oxels, enabling intricate and dynamic interconnections.
 
@@ -184,7 +184,9 @@ In a sense, oxels are a language for thought itself – a language that not only
 Turing machines, and by extension many traditional computational models, are based on sequential processing and linear structure which to a certain extent are based on the linear-literary form. They typically process data in a step-by-step manner, often following a specific sequence of operations or instructions. This mirrors the linear, sequential nature of language and literature, where sentences are read one word at a time and in a particular order.
 
 A Turing machine reads one symbol at a time from its tape and follows a set of rules to determine what actions to take based on that symbol. In contrast, Oxels can potentially recognize complex patterns or structures in the data, not just individual symbols. This can be likened to understanding the meaning of an entire paragraph or chapter at once, rather than processing it word by word.
+
 # Imminant non-locality of meaning
+
 Since modifications of the reference structures in the graph change the meaning of references is inherently non-local since it is a "form" or "shape" of the reference patterns and pattern references that give them their meaning. Thus by changing the form we imminently altering meaning across the totality of the connected graph, because the “form” is simply different. Interestingly, this doesn’t require the use of event-propogation, the change of form is simply *imminant*.
 
 Indeed, in a complex system like the Oxel-based cognitive landscape, the slightest change in the reference structure can lead to significant shifts in the meaning of individual Oxels, a phenomenon known as non-locality. This can be seen as a manifestation of a foundational principle in graph theory, where nodes (or in this case, Oxels) do not hold meaning in isolation but are defined by their relationships to other nodes.
@@ -208,10 +210,22 @@ In this perspective, meaning is not just the sum of individual references but th
 
 **Join the [Play! (telegram)](https://t.me/semioverse) we have weekly gatherings for casting semioversal magic!** *Bring your dreams and visions and lets weave interfaces for them!* 🎭🌍🎲💬
 
-**[Donate to support the development of Play!](https://slice.so/slicer/play "Support Play!")**
+## [Sponsor Play!](https://slice.so/slicer/play)
+
+You can sponsor the Play! [here](https://slice.so/slicer/play) or by sending `ETH` to this address: `0xd481a2d3ca2d4fa1f061e3ba10431fb4f38d92a5`
 
 ## Merge to Earn 💰🔄🧩
 
 This repository uses [Merge to Earn](https://mte.slice.so/) to automate rewarding contributors with a share of ownership over funds sent to  this repository's [slicer](https://slice.so/slicer/play), when pull requests are merged. It enables a transparent, equitable reward system for collaborative and open-source development.
 
-Shares of the Merge to Earn slicer do not represent shares of ownership over this project in any form, rather they represent only shares of the tokens that pass through the slicer.
+This repository uses [Merge to Earn](https://mte.slice.so/) to reward contributors with a piece of the [Play! slicer](https://slice.so/slicer/play).
+
+When merging a pull request, contributors **can receive an agreed number of slices cake (ERC1155 tokens) representing ownership over the earnings of the Play! slicer.**
+
+> See it in action on this [Demo PR](https://github.com/slice-so/merge-to-earn/pull/4)
+
+Funds earned can be claimed anytime on [slice.so](https://slice.so) while slices can be transferred and managed from either the Slice website or directly from your ETH wallet.
+
+You can also buy and sell your slices on [OpenSea](https://opensea.io/assets/ethereum/0x21da1b084175f95285B49b22C018889c45E1820d/37)!
+
+Disclaimer: *Shares of the Play! slicer do not represent shares of ownership over Play! in any form, rather they represent only shares of the tokens that pass through the slicer.*
